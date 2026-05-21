@@ -1,55 +1,204 @@
 "use client";
-import { motion } from "framer-motion";
+
+import { ChevronDown, MapPin } from "lucide-react";
+import { GitHubIcon } from "@/components/ui/GitHubIcon";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import type { MotionStyle, Transition } from "framer-motion";
+import { useRef } from "react";
+
+import { EASE_OUT } from "@/lib/motion";
 import { personal } from "@/lib/data";
+import { cn } from "@/lib/utils";
 
-export default function Hero() {
+const headlineLines = ["Nhat (Johnny)", "Dao"] as const;
+
+export function Hero() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const shouldReduceMotion = useReducedMotion() === true;
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const parallaxOpacity = useTransform(scrollYProgress, [0, 0.72], [1, 0]);
+
+  const parallaxStyle: MotionStyle = shouldReduceMotion
+    ? {}
+    : { y: parallaxY, opacity: parallaxOpacity };
+
+  const itemInitial = shouldReduceMotion
+    ? { opacity: 0 }
+    : { opacity: 0, y: 18 };
+
+  const itemAnimate = shouldReduceMotion
+    ? { opacity: 1 }
+    : { opacity: 1, y: 0 };
+
+  const lineInitial = shouldReduceMotion
+    ? { opacity: 0 }
+    : { opacity: 0, y: "110%" };
+
+  const lineAnimate = shouldReduceMotion
+    ? { opacity: 1 }
+    : { opacity: 1, y: "0%" };
+
+  const transition = (delay: number): Transition => ({
+    duration: shouldReduceMotion ? 0.2 : 0.72,
+    ease: EASE_OUT,
+    delay: shouldReduceMotion ? 0 : delay,
+  });
+
+  const lineTransition = (delay: number): Transition => ({
+    duration: shouldReduceMotion ? 0.2 : 0.84,
+    ease: EASE_OUT,
+    delay: shouldReduceMotion ? 0 : delay,
+  });
+
+  const ctaClassName = cn(
+    "inline-flex min-h-11 items-center justify-center rounded-lg px-5 font-heading text-12 font-semibold uppercase tracking-widest transition duration-300",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+  );
+
   return (
-    <section className="min-h-screen flex flex-col justify-center px-6 pt-14">
-      <div className="max-w-5xl mx-auto w-full">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
-        >
-          <p className="text-[#555555] text-sm mb-10 tracking-wide">
-            Software Developer · {personal.location}
-          </p>
-
-          <h1
-            className="font-black leading-none text-[#EFEFEF] mb-8"
-            style={{
-              fontFamily: "Archivo, sans-serif",
-              fontSize: "clamp(3.5rem, 11vw, 9.5rem)",
-              letterSpacing: "-0.04em",
-            }}
-          >
-            Johnny
-            <br />
-            Dao.
-          </h1>
-
-          <p className="text-[#888888] text-lg max-w-lg mb-14 leading-relaxed font-light">
-            {personal.bio}
-          </p>
-
-          <div className="flex gap-8">
-            <a
-              href={personal.github}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm text-[#EFEFEF] hover:text-[#3B82F6] transition-colors cursor-pointer"
+    <section
+      ref={sectionRef}
+      id="hero"
+      className="hero-shell relative flex min-h-dvh items-center py-24 md:py-28"
+    >
+      <motion.div
+        style={parallaxStyle}
+        className="relative z-10 mx-auto w-full max-w-container px-5 md:px-6"
+      >
+        <div className="max-w-[940px]">
+          <div className="flex flex-col gap-7 lg:flex-row lg:items-start lg:gap-9">
+            <motion.div
+              initial={itemInitial}
+              animate={itemAnimate}
+              transition={transition(0.1)}
+              className="relative grid size-28 shrink-0 place-items-center rounded-full border border-border bg-surface shadow-[0_18px_56px_rgba(0,0,0,0.34)] sm:size-32 lg:mt-2 lg:size-40"
+              aria-label="Profile picture placeholder for Nhat Johnny Dao"
+              role="img"
             >
-              GitHub ↗
-            </a>
-            <a
-              href={`mailto:${personal.email}`}
-              className="text-sm text-[#EFEFEF] hover:text-[#3B82F6] transition-colors cursor-pointer"
-            >
-              Email ↗
-            </a>
+              <div className="absolute -inset-4 rounded-full bg-accent/10 blur-2xl" />
+              <div className="absolute inset-2 rounded-full border border-accent/30 bg-[radial-gradient(circle_at_34%_24%,rgba(255,255,255,0.16),transparent_34%),linear-gradient(145deg,rgba(79,140,255,0.24),rgba(250,250,250,0.03))] shadow-[inset_0_0_44px_rgba(79,140,255,0.14)]" />
+              <span className="relative font-heading text-40 font-semibold tracking-[-0.05em] text-fg md:text-64">
+                JD
+              </span>
+            </motion.div>
+
+            <div className="min-w-0">
+              <motion.p
+                initial={itemInitial}
+                animate={itemAnimate}
+                transition={transition(0.04)}
+                className="mb-6 font-heading text-12 font-semibold uppercase tracking-widest text-accent"
+              >
+                {personal.title}
+              </motion.p>
+
+              <h1 className="font-heading text-hero font-semibold leading-[0.88] tracking-[-0.06em] text-fg">
+                {headlineLines.map((line, index) => (
+                  <span key={line} className="block overflow-hidden pb-2">
+                    <motion.span
+                      initial={lineInitial}
+                      animate={lineAnimate}
+                      transition={lineTransition(0.18 + index * 0.12)}
+                      className="block will-change-transform"
+                    >
+                      {line}
+                    </motion.span>
+                  </span>
+                ))}
+              </h1>
+
+              <motion.div
+                initial={itemInitial}
+                animate={itemAnimate}
+                transition={transition(0.5)}
+                className="mt-8 max-w-2xl"
+              >
+                <p className="text-18 leading-relaxed text-fg md:text-24">
+                  {personal.title} building full-stack products and AI/ML
+                  research tools.
+                </p>
+
+                <p className="mt-3 flex items-center gap-2 text-14 text-muted md:text-16">
+                  <MapPin className="size-4 text-accent" aria-hidden="true" />
+                  {personal.location}
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={itemInitial}
+                animate={itemAnimate}
+                transition={transition(0.64)}
+                className="mt-10 flex flex-wrap items-center gap-3"
+              >
+                <a
+                  href="#projects"
+                  data-cursor="link"
+                  className={cn(
+                    ctaClassName,
+                    "bg-accent text-bg hover:-translate-y-0.5 hover:text-white",
+                  )}
+                >
+                  View Projects
+                </a>
+
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  data-cursor="link"
+                  className={cn(
+                    ctaClassName,
+                    "border border-border text-fg hover:-translate-y-0.5 hover:border-accent",
+                  )}
+                >
+                  Resume
+                </a>
+
+                <a
+                  href={personal.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Open GitHub profile"
+                  data-cursor="link"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border text-fg transition duration-300 hover:-translate-y-0.5 hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                >
+                  <GitHubIcon className="size-5" />
+                </a>
+              </motion.div>
+            </div>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-muted"
+        animate={
+          shouldReduceMotion
+            ? undefined
+            : { y: [0, 8, 0], opacity: [0.55, 1, 0.55] }
+        }
+        transition={
+          shouldReduceMotion
+            ? undefined
+            : { duration: 1.8, ease: EASE_OUT, repeat: Infinity }
+        }
+      >
+        <span className="font-heading text-12 uppercase tracking-widest">
+          Scroll
+        </span>
+        <ChevronDown className="size-4" aria-hidden="true" />
+      </motion.div>
     </section>
   );
 }

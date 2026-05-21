@@ -1,91 +1,150 @@
 "use client";
 
-import { motion, useMotionValue } from "framer-motion";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-const cursorSize = 12;
-const interactiveSelector =
-  'a, button, [role="button"], input, textarea, select, label';
+const INTERACTIVE_SELECTOR =
+  "a, button, [data-cursor], input, textarea, select, summary, [role='button']";
 
-export default function CustomCursor() {
-  const [hasFinePointer, setHasFinePointer] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isInteractive, setIsInteractive] = useState(false);
+function getInteractiveTarget(target: EventTarget | null) {
+  return target instanceof Element
+    ? (target.closest(INTERACTIVE_SELECTOR) as HTMLElement | null)
+    : null;
+}
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(pointer: fine)");
-    const handleChange = () => setHasFinePointer(mediaQuery.matches);
-
-    handleChange();
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
+export function CustomCursor() {
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const trailRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const pathname = usePathname();
+  const isPhotographyRoute = pathname.startsWith("/photography");
 
   useEffect(() => {
-    if (!hasFinePointer) return;
+    if (isPhotographyRoute) {
+      setIsEnabled(false);
+      document.body.classList.remove("custom-cursor-active");
 
-    const handleMouseMove = (event: MouseEvent) => {
-      x.set(event.clientX - cursorSize / 2);
-      y.set(event.clientY - cursorSize / 2);
-      setIsVisible(true);
+      return () => {
+        document.body.classList.remove("custom-cursor-active");
+      };
+    }
+
+    const finePointerQuery = window.matchMedia("(pointer: fine)");
+    const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let enabled = false;
+    let hoveredElement: HTMLElement | null = null;
+    let hoveredRect: DOMRect | null = null;
+
+    const resetLock = () => {
+      hoveredElement = null;
+      hoveredRect = null;
+      ringRef.current?.style.setProperty("width", "");
+      ringRef.current?.style.setProperty("height", "");
+      ringRef.current?.style.setProperty("border-radius", "");
+      cursorRef.current?.classList.remove("custom-cursor--locked");
+      trailRef.current?.classList.remove("custom-cursor--locked");
     };
 
-    const handleMouseLeave = () => setIsVisible(false);
+    const updateEnabled = () => {
+      enabled = finePointerQuery.matches && !reduceMotionQuery.matches;
+      setIsEnabled(enabled);
+      document.body.classList.toggle("custom-cursor-active", enabled);
 
-    const handleMouseOver = (event: MouseEvent) => {
-      const target = event.target;
-
-      if (target instanceof Element && target.closest(interactiveSelector)) {
-        setIsInteractive(true);
+      if (!enabled) {
+        cursorRef.current?.style.setProperty("opacity", "0");
+        trailRef.current?.style.setProperty("opacity", "0");
+        resetLock();
       }
     };
 
-    const handleMouseOut = (event: MouseEvent) => {
-      const relatedTarget = event.relatedTarget;
-
-      if (
-        relatedTarget instanceof Element &&
-        relatedTarget.closest(interactiveSelector)
-      ) {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!enabled || event.pointerType !== "mouse") {
         return;
       }
 
-      const target = event.target;
+      const cursor = cursorRef.current;
+      const trail = trailRef.current;
+      const ring = ringRef.current;
 
-      if (target instanceof Element && target.closest(interactiveSelector)) {
-        setIsInteractive(false);
+      if (!cursor || !trail || !ring) {
+        return;
       }
+
+      const el = getInteractiveTarget(event.target);
+
+      trail.style.opacity = "1";
+      cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+
+      if (el) {
+        if (hoveredElement !== el) {
+          hoveredElement = el;
+        }
+
+        hoveredRect = el.getBoundingClientRect();
+        trail.style.transform = `translate3d(${hoveredRect.left + hoveredRect.width / 2}px, ${hoveredRect.top + hoveredRect.height / 2}px, 0)`;
+        ring.style.width = `${hoveredRect.width + 12}px`;
+        ring.style.height = `${hoveredRect.height + 12}px`;
+        ring.style.borderRadius = "8px";
+        cursor.style.opacity = "0";
+        cursor.classList.add("custom-cursor--locked");
+        trail.classList.add("custom-cursor--locked");
+      } else {
+        resetLock();
+        cursor.style.opacity = "1";
+        trail.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      }
+
+      const isInteractive = Boolean(el);
+      cursor.classList.toggle("custom-cursor--interactive", isInteractive);
+      trail.classList.toggle("custom-cursor--interactive", isInteractive);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseleave", handleMouseLeave);
-    document.addEventListener("mouseover", handleMouseOver);
-    document.addEventListener("mouseout", handleMouseOut);
+    const handlePointerLeave = () => {
+      cursorRef.current?.style.setProperty("opacity", "0");
+      trailRef.current?.style.setProperty("opacity", "0");
+      resetLock();
+    };
+
+    updateEnabled();
+
+    finePointerQuery.addEventListener("change", updateEnabled);
+    reduceMotionQuery.addEventListener("change", updateEnabled);
+    document.addEventListener("pointermove", handlePointerMove, { passive: true });
+    document.addEventListener("pointerleave", handlePointerLeave);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseleave", handleMouseLeave);
-      document.removeEventListener("mouseover", handleMouseOver);
-      document.removeEventListener("mouseout", handleMouseOut);
+      finePointerQuery.removeEventListener("change", updateEnabled);
+      reduceMotionQuery.removeEventListener("change", updateEnabled);
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("pointerleave", handlePointerLeave);
+      document.body.classList.remove("custom-cursor-active");
     };
-  }, [hasFinePointer, x, y]);
+  }, [isPhotographyRoute]);
 
-  if (!hasFinePointer) return null;
+  if (isPhotographyRoute || !isEnabled) {
+    return null;
+  }
 
   return (
-    <motion.div
-      animate={{ scale: isInteractive ? 2 : 1 }}
-      className="pointer-events-none fixed left-0 top-0 z-[9999] h-3 w-3 rounded-full bg-white mix-blend-difference"
-      style={{
-        x,
-        y,
-        opacity: isVisible ? 1 : 0,
-      }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
-    />
+    <>
+      <div
+        ref={trailRef}
+        aria-hidden="true"
+        className="custom-cursor custom-cursor__trail pointer-events-none fixed left-0 top-0 z-[99] opacity-0"
+      >
+        <div
+          ref={ringRef}
+          className="custom-cursor__ring h-12 w-12 rounded-full border border-white/70 bg-transparent"
+        />
+      </div>
+      <div
+        ref={cursorRef}
+        aria-hidden="true"
+        className="custom-cursor pointer-events-none fixed left-0 top-0 z-[100] opacity-0"
+      >
+        <div className="custom-cursor__dot h-6 w-6 rounded-full border border-white bg-white shadow-[0_0_0_3px_rgb(255_255_255/0.14),0_0_14px_rgb(255_255_255/0.42)]" />
+      </div>
+    </>
   );
 }

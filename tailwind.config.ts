@@ -2,36 +2,39 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   darkMode: "class",
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ["./app/**/*.{ts,tsx,mdx}", "./components/**/*.{ts,tsx,mdx}"],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ["JetBrains Mono", "monospace"],
-        heading: ["Orbitron", "sans-serif"],
-      },
       colors: {
-        cp: {
-          yellow: "#F5C518",
-          "yellow-dim": "#C49B10",
-          cyan: "#00D4FF",
-          "cyan-dim": "#0099BB",
-          red: "#FF3366",
-          void: "#0A0A0F",
-          card: "#12121A",
-          muted: "#1C1C2E",
-          border: "#2A2A3A",
-          text: "#E0E0E0",
-          "text-dim": "#888899",
-        },
+        bg: "rgb(var(--bg) / <alpha-value>)",
+        surface: "rgb(var(--surface) / <alpha-value>)",
+        "surface-2": "rgb(var(--surface-2) / <alpha-value>)",
+        fg: "rgb(var(--fg) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
+        border: "rgb(var(--border) / <alpha-value>)",
+        accent: "rgb(var(--accent) / <alpha-value>)",
+        "accent-dim": "rgb(var(--accent-dim) / <alpha-value>)",
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      fontFamily: {
+        sans: ["var(--font-space-grotesk)", "system-ui", "sans-serif"],
+        heading: ["var(--font-archivo)", "system-ui", "sans-serif"],
+      },
+      fontSize: {
+        12: ["0.75rem", { lineHeight: "1rem" }],
+        14: ["0.875rem", { lineHeight: "1.25rem" }],
+        16: ["1rem", { lineHeight: "1.6rem" }],
+        18: ["1.125rem", { lineHeight: "1.75rem" }],
+        24: ["1.5rem", { lineHeight: "2rem", letterSpacing: "-0.02em" }],
+        40: ["2.5rem", { lineHeight: "2.75rem", letterSpacing: "-0.04em" }],
+        64: ["4rem", { lineHeight: "4rem", letterSpacing: "-0.055em" }],
+        96: ["6rem", { lineHeight: "5.75rem", letterSpacing: "-0.065em" }],
+        hero: [
+          "clamp(4rem, 10vw, 6rem)",
+          { lineHeight: "0.95", letterSpacing: "-0.065em" },
+        ],
+      },
+      maxWidth: {
+        container: "1100px",
       },
     },
   },

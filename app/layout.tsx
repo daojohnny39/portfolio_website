@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Space_Grotesk } from "next/font/google";
-import CustomCursor from "@/components/core/CustomCursor";
+import { CustomCursor } from "@/components/core/CustomCursor";
+import { FoldTransitionProvider } from "@/components/core/Providers";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -30,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${archivo.variable} ${spaceGrotesk.variable}`}>
       <body className="font-[family-name:var(--font-space-grotesk)] antialiased">
-        {children}
+        <FoldTransitionProvider>{children}</FoldTransitionProvider>
         <CustomCursor />
       </body>
     </html>
