@@ -165,7 +165,7 @@ export function parsePhotos(): Photo[] {
       date,
       month: toMonthLabel(date),
       categories: entry.categories,
-      url: `/images/${encodeURIComponent(entry.filename)}`,
+      url: `https://ydaih1mg4buuava3.public.blob.vercel-storage.com/${encodeURIComponent(entry.filename)}`,
     };
   }).sort((a, b) => b.date.getTime() - a.date.getTime()); // newest first
 }
