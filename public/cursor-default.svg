@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- hotspot: 4 3 -->
+  <defs>
+    <filter id="neon-glow" x="-100%" y="-100%" width="300%" height="300%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="wideBlur"/>
+      <feFlood flood-color="#00D4FF" flood-opacity="0.95" result="wideColor"/>
+      <feComposite in="wideColor" in2="wideBlur" operator="in" result="wideGlow"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="tightBlur"/>
+      <feFlood flood-color="#00D4FF" flood-opacity="1" result="tightColor"/>
+      <feComposite in="tightColor" in2="tightBlur" operator="in" result="tightGlow"/>
+      <feMerge>
+        <feMergeNode in="wideGlow"/>
+        <feMergeNode in="tightGlow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <path d="M 4,3 L 4,24 L 21,14 Z" fill="none" stroke="#00D4FF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" filter="url(#neon-glow)"/>
+</svg>
