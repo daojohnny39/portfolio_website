@@ -1,3 +1,4 @@
+import { GhostTopNav } from "@/components/core/GhostTopNav";
 import { MeshBackground } from "@/components/core/MeshBackground";
 import { TopNav } from "@/components/core/TopNav";
 import { Hero } from "@/components/sections/Hero";
@@ -13,7 +14,8 @@ export default function PortfolioPage() {
       <MeshBackground />
       <div className="relative z-[1]">
         <TopNav />
-        <main>
+        <GhostTopNav />
+        <main className="md:pl-20">
           <Hero />
           <About />
           <Experience />

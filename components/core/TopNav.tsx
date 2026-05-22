@@ -6,22 +6,33 @@ import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 
 import { useFoldTransition } from "@/components/core/Providers";
-import { cn } from "@/lib/utils";
 import { EASE_OUT, fadeUp, spring, staggerContainer } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
+  { label: "Intro", href: "#intro" },
   { label: "About", href: "#about" },
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
-  { label: "Skills", href: "#skills" },
   { label: "Education", href: "#education" },
   { label: "Contact", href: "#contact" },
 ] as const;
 
-const SECTION_IDS = ["hero", "about", "experience", "projects", "skills", "education", "contact"] as const;
+const SECTION_IDS = ["intro", "hero", "about", "experience", "projects", "education", "contact"] as const;
 
 const focusRing =
   "outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+
+const desktopNavWidth = {
+  collapsed: 48,
+  expanded: 220,
+} as const;
+
+const desktopNavHeight = {
+  collapsed: 200,
+  expanded: 320,
+  wheel: 380,
+} as const;
 
 export function TopNav() {
   const router = useRouter();
@@ -30,9 +41,18 @@ export function TopNav() {
   const { scrollY } = useScroll();
   const [activeId, setActiveId] = useState<(typeof SECTION_IDS)[number]>("hero");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isWheelMode, setIsWheelMode] = useState(false);
+  const [isWheelHovered, setIsWheelHovered] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navScrollRef = useRef<HTMLDivElement | null>(null);
+  const navItemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const isMenuOpenRef = useRef(false);
+  const activeNavId = activeId === "hero" ? "intro" : activeId;
+  const activeIndex = Math.max(
+    0,
+    NAV_LINKS.findIndex((link) => link.href.slice(1) === activeNavId),
+  );
 
   useEffect(() => {
     isMenuOpenRef.current = isMenuOpen;
@@ -42,10 +62,18 @@ export function TopNav() {
     }
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    const latest = scrollY.get();
+
+    setIsScrolled(latest > 24);
+    setIsWheelMode(latest > 300);
+  }, [scrollY]);
+
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? latest;
 
     setIsScrolled(latest > 24);
+    setIsWheelMode(latest > 300);
 
     if (shouldReduceMotion || isMenuOpenRef.current) {
       setIsHidden(false);
@@ -83,9 +111,27 @@ export function TopNav() {
     return () => observer.disconnect();
   }, []);
 
-  const handlePhotographyClick = () => {
-    triggerFold(() => router.push("/photography"));
-  };
+  useEffect(() => {
+    if (isWheelMode) {
+      return;
+    }
+
+    const container = navScrollRef.current;
+    const item = navItemRefs.current[activeId];
+
+    if (!container || !item) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      container.scrollTo({
+        top: Math.max(0, item.offsetTop - container.clientHeight / 2 + item.clientHeight / 2),
+        behavior: shouldReduceMotion ? "auto" : "smooth",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeId, isWheelMode, shouldReduceMotion]);
 
   const handleMobilePhotographyClick = () => {
     setIsMenuOpen(false);
@@ -125,71 +171,163 @@ export function TopNav() {
     <>
       <motion.header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300",
+          "fixed left-0 top-1/2 z-50 hidden md:block",
+          "px-2 py-4",
+        )}
+        animate={{
+          width: desktopNavWidth.expanded,
+          x: 0,
+          y: "-50%",
+        }}
+        transition={shouldReduceMotion ? { duration: 0 } : spring}
+      >
+        <nav aria-label="Primary navigation" className="flex flex-col items-start gap-3">
+          <motion.div
+            className="w-full overflow-hidden"
+            animate={{
+              height: isWheelHovered ? 500 : (isWheelMode ? desktopNavHeight.wheel : desktopNavHeight.expanded),
+            }}
+            transition={shouldReduceMotion ? { duration: 0 } : spring}
+            onMouseEnter={() => isWheelMode && setIsWheelHovered(true)}
+            onMouseLeave={() => setIsWheelHovered(false)}
+            style={{
+              maskImage: isWheelHovered
+                ? "none"
+                : "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+              WebkitMaskImage: isWheelHovered
+                ? "none"
+                : "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+            }}
+          >
+            <div className="relative h-full">
+              <AnimatePresence initial={false}>
+                {!isWheelMode ? (
+                  <motion.div
+                    key="flat-nav"
+                    className="absolute inset-0"
+                    initial={shouldReduceMotion ? false : { opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={shouldReduceMotion ? { duration: 0 } : spring}
+                  >
+                    <div
+                      ref={navScrollRef}
+                      className="relative h-full overflow-y-auto py-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    >
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        {NAV_LINKS.map((link) => {
+                          const id = link.href.slice(1);
+                          const isActive = activeId === id || (id === "intro" && activeId === "hero");
+
+                          return (
+                            <a
+                              key={link.href}
+                              ref={(element) => {
+                                navItemRefs.current[id] = element;
+                              }}
+                              href={link.href}
+                              data-cursor
+                              aria-label={link.label}
+                              aria-current={isActive ? "location" : undefined}
+                              className={cn(
+                                focusRing,
+                                "group relative flex h-9 w-full items-center rounded-full border text-12 font-medium uppercase tracking-[0.18em] transition-colors duration-200",
+                                "justify-start gap-2 px-3",
+                                isActive
+                                  ? "border-transparent font-semibold text-white"
+                                  : "border-transparent text-muted hover:border-border hover:bg-bg/30 hover:text-fg",
+                              )}
+                            >
+                              <span
+                                aria-hidden="true"
+                                className={cn(
+                                  "h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-200",
+                                  isActive ? "scale-125 bg-accent" : "bg-muted group-hover:bg-fg",
+                                )}
+                              />
+                              <motion.span
+                                className="overflow-hidden whitespace-nowrap"
+                                animate={{
+                                  maxWidth: 150,
+                                  opacity: 1,
+                                }}
+                                transition={shouldReduceMotion ? { duration: 0 } : spring}
+                              >
+                                {link.label}
+                              </motion.span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="wheel-nav"
+                    className="absolute inset-0 py-8"
+                    initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={shouldReduceMotion ? { duration: 0 } : spring}
+                  >
+                    <div className="relative h-full w-full">
+                      {NAV_LINKS.map((link, index) => {
+                        const id = link.href.slice(1);
+                        const offset = index - activeIndex;
+                        const isActive = offset === 0;
+                        const isHiddenOnWheel = !isWheelHovered && Math.abs(offset) >= 3;
+
+                        return (
+                          <motion.a
+                            key={link.href}
+                            ref={(element) => {
+                              navItemRefs.current[id] = element;
+                            }}
+                            href={link.href}
+                            data-cursor
+                            aria-label={link.label}
+                            aria-current={isActive ? "location" : undefined}
+                            className={cn(
+                              focusRing,
+                              "group absolute left-0 top-1/2 flex h-9 w-full items-center justify-start rounded-full px-3 text-12 font-medium uppercase tracking-[0.18em] text-muted transition-colors duration-200 hover:text-fg",
+                              isActive && "font-semibold text-white",
+                            )}
+                            animate={{
+                              y: "-50%",
+                              rotateX: 0,
+                              translateY: offset * 62,
+                              translateZ: 0,
+                              opacity: isHiddenOnWheel ? 0 : isWheelHovered ? Math.max(0.4, 1 - Math.abs(offset) * 0.18) : Math.max(0, 1 - Math.abs(offset) * 0.35),
+                              pointerEvents: isHiddenOnWheel ? "none" : "auto",
+                            }}
+                            transition={shouldReduceMotion ? { duration: 0 } : spring}
+                            style={{
+                              transformOrigin: "50% 50%",
+                            }}
+                          >
+                            {link.label}
+                          </motion.a>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+        </nav>
+      </motion.header>
+
+      <motion.header
+        className={cn(
+          "fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 md:hidden",
           isScrolled || isMenuOpen ? "border-border bg-bg/70 backdrop-blur-xl" : "border-transparent bg-transparent",
         )}
         animate={{ y: shouldReduceMotion || !isHidden ? 0 : "-100%" }}
         transition={shouldReduceMotion ? { duration: 0 } : spring}
       >
-        <div className="mx-auto grid h-16 max-w-container grid-cols-[1fr_auto_1fr] items-center px-5 md:px-6">
-          <nav aria-label="Primary navigation" className="col-start-2 hidden items-center gap-2 md:flex">
-            {NAV_LINKS.map((link) => {
-              const id = link.href.slice(1);
-              const isActive = activeId === id;
-
-              return (
-                <Fragment key={link.href}>
-                  <a
-                    href={link.href}
-                    data-cursor
-                    aria-current={isActive ? "location" : undefined}
-                    className={cn(
-                      focusRing,
-                      "group relative flex h-12 items-center px-4 text-14 font-medium transition-colors duration-200",
-                      isActive ? "text-fg" : "text-muted hover:text-fg",
-                    )}
-                  >
-                    {link.label}
-                    <span
-                      className={cn(
-                        "absolute bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-accent opacity-0 transition-opacity duration-200",
-                        isActive && "opacity-100",
-                      )}
-                    />
-                  </a>
-                  {link.label === "Education" ? (
-                    <button
-                      type="button"
-                      data-cursor
-                      onClick={handlePhotographyClick}
-                      className={cn(
-                        focusRing,
-                        "group relative flex h-12 items-center px-4 text-14 font-medium text-muted transition-colors duration-200 hover:text-fg",
-                      )}
-                    >
-                      Photography
-                    </button>
-                  ) : null}
-                </Fragment>
-              );
-            })}
-
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noreferrer"
-              download
-              data-cursor
-              className={cn(
-                focusRing,
-                "ml-4 inline-flex h-11 items-center gap-2 rounded-full border border-border px-5 text-14 font-medium text-fg transition-colors duration-200 hover:border-accent hover:bg-accent hover:text-bg",
-              )}
-            >
-              Resume
-              <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
-            </a>
-          </nav>
-
+        <div className="flex h-16 items-center justify-end px-5">
           <button
             type="button"
             aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -199,7 +337,7 @@ export function TopNav() {
             onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
             className={cn(
               focusRing,
-              "col-start-3 ml-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-fg transition-colors duration-200 hover:border-accent hover:text-accent md:hidden",
+              "inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-fg transition-colors duration-200 hover:border-accent hover:text-accent",
             )}
           >
             {isMenuOpen ? <X aria-hidden="true" className="h-5 w-5" /> : <Menu aria-hidden="true" className="h-5 w-5" />}
