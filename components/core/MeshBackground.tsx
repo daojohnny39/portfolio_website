@@ -155,7 +155,7 @@ export function MeshBackground() {
           targetX += Math.sin(seconds * (TAU / 14) + dot.phase) * 6.0;
           targetY += Math.cos(seconds * (TAU / 11) + dot.phase) * 6.0;
 
-          if (cursor.active) {
+          if (cursor.active && !document.body.hasAttribute("data-wheel-nav-expanded")) {
             const deltaX = targetX - cursor.x;
             const deltaY = targetY - cursor.y;
             const distance = Math.hypot(deltaX, deltaY);

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useCallback, useMemo, useState } from "react";
 
 import type { Category, Photo } from "@/lib/photography";
@@ -25,7 +26,9 @@ export default function PhotographyClient({ photos, months, totalPhotoCount }: P
   const filteredPhotos = useMemo(() => {
     let nextPhotos = photos;
 
-    if (activeCategory !== "all") {
+    if (activeCategory === "all") {
+      nextPhotos = nextPhotos.filter((photo) => !photo.categories.includes("bw"));
+    } else {
       nextPhotos = nextPhotos.filter((photo) => photo.categories.includes(activeCategory));
     }
 
@@ -49,7 +52,12 @@ export default function PhotographyClient({ photos, months, totalPhotoCount }: P
   );
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pt-16 text-[#fafafa]">
+    <motion.div
+      className="min-h-screen pt-16"
+      initial={{ opacity: 0, x: 30 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
       <PhotographyNav totalPhotoCount={totalPhotoCount} />
 
       <FilterBar
@@ -62,9 +70,8 @@ export default function PhotographyClient({ photos, months, totalPhotoCount }: P
         onSortChange={setSortOrder}
       />
 
-      <div className="flex items-center justify-between px-4 py-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a93] md:px-6">
+      <div className="flex items-center justify-between px-4 py-2 text-[11px] tracking-wide text-[rgb(var(--muted))] md:px-6">
         <span>Showing {filteredPhotos.length} of {totalPhotoCount}</span>
-        <span className="hidden text-[#3b82f6] sm:inline">Night City Archive</span>
       </div>
 
       <PhotoGrid photos={filteredPhotos} onPhotoClick={handlePhotoClick} />
@@ -75,6 +82,6 @@ export default function PhotographyClient({ photos, months, totalPhotoCount }: P
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
       />
-    </div>
+    </motion.div>
   );
 }

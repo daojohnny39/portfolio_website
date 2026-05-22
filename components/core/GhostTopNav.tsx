@@ -15,7 +15,7 @@ const focusRing =
 
 export function GhostTopNav() {
   const router = useRouter();
-  const { triggerFold } = useFoldTransition();
+  const { triggerTransition } = useFoldTransition();
   const shouldReduceMotion = useReducedMotion();
   const [activeId, setActiveId] = useState<(typeof SECTION_IDS)[number]>("hero");
 
@@ -48,7 +48,7 @@ export function GhostTopNav() {
   }, []);
 
   const handlePhotographyClick = () => {
-    triggerFold(() => router.push("/photography"));
+    triggerTransition(() => router.push("/photography"), "right");
   };
 
   return (

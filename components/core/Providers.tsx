@@ -3,17 +3,20 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
-import { FoldOverlay } from "./FoldOverlay";
+import { SlideOverlay } from "./SlideOverlay";
 
-interface FoldTransitionContextValue {
-  triggerFold: (callback: () => void) => void;
+type TransitionDirection = "left" | "right";
+
+interface PageTransitionContextValue {
+  triggerTransition: (callback: () => void, direction?: TransitionDirection) => void;
   isAnimating: boolean;
+  direction: TransitionDirection;
 }
 
-const FoldTransitionContext = createContext<FoldTransitionContextValue | undefined>(undefined);
+const PageTransitionContext = createContext<PageTransitionContextValue | undefined>(undefined);
 
 export function useFoldTransition() {
-  const context = useContext(FoldTransitionContext);
+  const context = useContext(PageTransitionContext);
 
   if (!context) {
     throw new Error("useFoldTransition must be used within FoldTransitionProvider");
@@ -29,13 +32,15 @@ interface FoldTransitionProviderProps {
 export function FoldTransitionProvider({ children }: FoldTransitionProviderProps) {
   const callbackRef = useRef<(() => void) | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [direction, setDirection] = useState<TransitionDirection>("right");
 
-  const triggerFold = useCallback((callback: () => void) => {
+  const triggerTransition = useCallback((callback: () => void, dir: TransitionDirection = "right") => {
     callbackRef.current = callback;
+    setDirection(dir);
     setIsAnimating(true);
   }, []);
 
-  const handleFoldComplete = useCallback(() => {
+  const handleComplete = useCallback(() => {
     callbackRef.current?.();
     callbackRef.current = null;
     setIsAnimating(false);
@@ -43,16 +48,17 @@ export function FoldTransitionProvider({ children }: FoldTransitionProviderProps
 
   const value = useMemo(
     () => ({
-      triggerFold,
+      triggerTransition,
       isAnimating,
+      direction,
     }),
-    [triggerFold, isAnimating],
+    [triggerTransition, isAnimating, direction],
   );
 
   return (
-    <FoldTransitionContext.Provider value={value}>
+    <PageTransitionContext.Provider value={value}>
       {children}
-      <FoldOverlay isAnimating={isAnimating} onComplete={handleFoldComplete} />
-    </FoldTransitionContext.Provider>
+      <SlideOverlay isAnimating={isAnimating} direction={direction} onComplete={handleComplete} />
+    </PageTransitionContext.Provider>
   );
 }

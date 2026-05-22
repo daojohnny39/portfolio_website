@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Night City Archive — Photography",
-  description: "Cyberpunk 2077 in-game photography by Johnny Dao",
+  title: "Photography — Johnny Dao",
+  description: "Cyberpunk 2077 virtual photography by Johnny Dao, recognized by CD Projekt Red",
 };
 
 export default function PhotographyLayout({
@@ -12,7 +12,7 @@ export default function PhotographyLayout({
   children: ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#fafafa]">
+    <div className="photo-theme min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--fg))]">
       {children}
     </div>
   );

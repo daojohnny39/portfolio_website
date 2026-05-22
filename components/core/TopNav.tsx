@@ -36,7 +36,7 @@ const desktopNavHeight = {
 
 export function TopNav() {
   const router = useRouter();
-  const { triggerFold } = useFoldTransition();
+  const { triggerTransition } = useFoldTransition();
   const shouldReduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
   const [activeId, setActiveId] = useState<(typeof SECTION_IDS)[number]>("hero");
@@ -45,14 +45,20 @@ export function TopNav() {
   const [isWheelHovered, setIsWheelHovered] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [dialIndex, setDialIndex] = useState<number | null>(null);
   const navScrollRef = useRef<HTMLDivElement | null>(null);
+  const navContainerRef = useRef<HTMLDivElement | null>(null);
   const navItemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const isMenuOpenRef = useRef(false);
+  const dialIndexRef = useRef(0);
+  const wheelDebounceRef = useRef(0);
   const activeNavId = activeId === "hero" ? "intro" : activeId;
   const activeIndex = Math.max(
     0,
     NAV_LINKS.findIndex((link) => link.href.slice(1) === activeNavId),
   );
+  const effectiveIndex = dialIndex ?? activeIndex;
+  dialIndexRef.current = effectiveIndex;
 
   useEffect(() => {
     isMenuOpenRef.current = isMenuOpen;
@@ -135,7 +141,12 @@ export function TopNav() {
 
   const handleMobilePhotographyClick = () => {
     setIsMenuOpen(false);
-    triggerFold(() => router.push("/photography"));
+    triggerTransition(() => router.push("/photography"), "right");
+  };
+
+  const handleIntroClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: shouldReduceMotion ? "auto" : "smooth" });
   };
 
   useEffect(() => {
@@ -167,6 +178,50 @@ export function TopNav() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    if (isWheelHovered) {
+      document.body.setAttribute("data-wheel-nav-expanded", "");
+    } else {
+      document.body.removeAttribute("data-wheel-nav-expanded");
+    }
+
+    return () => document.body.removeAttribute("data-wheel-nav-expanded");
+  }, [isWheelHovered]);
+
+  useEffect(() => {
+    const container = navContainerRef.current;
+
+    if (!container || !isWheelHovered) {
+      return;
+    }
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      const now = Date.now();
+
+      if (now - wheelDebounceRef.current < 350) {
+        return;
+      }
+
+      wheelDebounceRef.current = now;
+
+      const direction = e.deltaY > 0 ? -1 : 1;
+      const currentIndex = dialIndexRef.current;
+      const newIndex = Math.max(0, Math.min(NAV_LINKS.length - 1, currentIndex + direction));
+
+      if (newIndex === currentIndex) {
+        return;
+      }
+
+      setDialIndex(newIndex);
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => container.removeEventListener("wheel", handleWheel);
+  }, [isWheelHovered]);
+
   return (
     <>
       <motion.header
@@ -183,13 +238,14 @@ export function TopNav() {
       >
         <nav aria-label="Primary navigation" className="flex flex-col items-start gap-3">
           <motion.div
-            className="w-full overflow-hidden"
+            ref={navContainerRef}
+            className={cn("w-full", isWheelHovered ? "overflow-visible" : "overflow-hidden")}
             animate={{
-              height: isWheelHovered ? 500 : (isWheelMode ? desktopNavHeight.wheel : desktopNavHeight.expanded),
+              height: isWheelHovered ? 600 : (isWheelMode ? desktopNavHeight.wheel : desktopNavHeight.expanded),
             }}
             transition={shouldReduceMotion ? { duration: 0 } : spring}
-            onMouseEnter={() => isWheelMode && setIsWheelHovered(true)}
-            onMouseLeave={() => setIsWheelHovered(false)}
+            onMouseEnter={() => { if (isWheelMode) { setIsWheelHovered(true); setDialIndex(activeIndex); } }}
+            onMouseLeave={() => { setIsWheelHovered(false); setDialIndex(null); }}
             style={{
               maskImage: isWheelHovered
                 ? "none"
@@ -229,6 +285,7 @@ export function TopNav() {
                               data-cursor
                               aria-label={link.label}
                               aria-current={isActive ? "location" : undefined}
+                              onClick={id === "intro" ? handleIntroClick : undefined}
                               className={cn(
                                 focusRing,
                                 "group relative flex h-9 w-full items-center rounded-full border text-12 font-medium uppercase tracking-[0.18em] transition-colors duration-200",
@@ -273,7 +330,7 @@ export function TopNav() {
                     <div className="relative h-full w-full">
                       {NAV_LINKS.map((link, index) => {
                         const id = link.href.slice(1);
-                        const offset = index - activeIndex;
+                        const offset = index - effectiveIndex;
                         const isActive = offset === 0;
                         const isHiddenOnWheel = !isWheelHovered && Math.abs(offset) >= 3;
 
@@ -287,6 +344,7 @@ export function TopNav() {
                             data-cursor
                             aria-label={link.label}
                             aria-current={isActive ? "location" : undefined}
+                            onClick={id === "intro" ? handleIntroClick : undefined}
                             className={cn(
                               focusRing,
                               "group absolute left-0 top-1/2 flex h-9 w-full items-center justify-start rounded-full px-3 text-12 font-medium uppercase tracking-[0.18em] text-muted transition-colors duration-200 hover:text-fg",
@@ -295,14 +353,16 @@ export function TopNav() {
                             animate={{
                               y: "-50%",
                               rotateX: 0,
-                              translateY: offset * 62,
+                              translateY: offset * (isWheelHovered ? 76 : 62),
                               translateZ: 0,
                               opacity: isHiddenOnWheel ? 0 : isWheelHovered ? Math.max(0.4, 1 - Math.abs(offset) * 0.18) : Math.max(0, 1 - Math.abs(offset) * 0.35),
+                              fontSize: isWheelHovered ? "1.25rem" : "0.875rem",
                               pointerEvents: isHiddenOnWheel ? "none" : "auto",
                             }}
                             transition={shouldReduceMotion ? { duration: 0 } : spring}
                             style={{
                               transformOrigin: "50% 50%",
+                              fontSize: "0.875rem",
                             }}
                           >
                             {link.label}
@@ -370,7 +430,10 @@ export function TopNav() {
                       href={link.href}
                       data-cursor
                       variants={fadeUp}
-                      onClick={() => setIsMenuOpen(false)}
+                      onClick={(e) => {
+                        if (link.href === "#intro") handleIntroClick(e as unknown as React.MouseEvent<HTMLAnchorElement>);
+                        setIsMenuOpen(false);
+                      }}
                       className={cn(
                         focusRing,
                         "flex min-h-14 items-center border-b border-border py-4 font-heading text-40 leading-none tracking-tight text-fg transition-colors duration-200 hover:text-accent",
