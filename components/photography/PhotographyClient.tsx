@@ -87,10 +87,10 @@ export default function PhotographyClient({ photos, months, totalPhotoCount }: P
           {personal.name}
         </h2>
         <p className="mt-1 text-xs font-medium uppercase tracking-widest text-[rgb(var(--muted))]">
-          Cyberpunk 2077 Virtual Photographer
+          Virtual Photography
         </p>
         <p className="mt-3 text-xs leading-relaxed tracking-wide text-[rgb(var(--muted))]">
-          Virtual Photographer recognized by CD Projekt Red.  Occasionally take preview shots for upcoming Cyberpunk 2077 mod releases on NexusMods. All shots are taken using reShade and Otis tools with no post-processing.
+          Cyberpunk 2077 Virtual Photographer recognized by CD Projekt Red.  Occasionally take preview shots for upcoming Cyberpunk 2077 mod releases on NexusMods. All shots are taken using reShade and Otis tools with no post-processing.
         </p>
       </div>
 
