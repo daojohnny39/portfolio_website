@@ -86,6 +86,10 @@ const RAW: { filename: string; categories: Category[] }[] = [
   { filename: "Cyberpunk2077 2025-12-23 03-14-47_042.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2025-12-25 04-25-42_706.png",   categories: ["artsy"]    },
   { filename: "Cyberpunk2077 2025-12-25 04-45-55_135.png",   categories: ["artsy"]    },
+  { filename: "Cyberpunk2077 2025-12-28 03-06-35_727.png",   categories: ["portrait"]     },
+  { filename: "Cyberpunk2077 2025-12-28 03-57-15_083.png",   categories: ["portrait"]     },
+  { filename: "Cyberpunk2077 2025-12-28 04-14-03_369.png",   categories: ["portrait"]     },
+  { filename: "Cyberpunk2077 2025-12-30 03-24-37_305.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2026-01-02 14-28-50_210.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2026-01-02 15-33-24_561.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2026-01-02 16-10-59_038.png",   categories: ["portrait"]     },
@@ -125,6 +129,10 @@ const RAW: { filename: string; categories: Category[] }[] = [
   { filename: "Cyberpunk2077 2026-02-14 03-17-17_109.png",   categories: ["artsy"]    },
   { filename: "Cyberpunk2077 2026-02-16 02-41-10_942.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2026-02-17 21-34-33_199.png",   categories: ["environment"]    },
+  { filename: "Cyberpunk2077 2026-03-08 19-45-16_952.png",   categories: ["portrait"]     },
+  { filename: "Cyberpunk2077 2026-03-22 23-21-20_221.png",   categories: ["artsy"]        },
+  { filename: "Cyberpunk2077 2026-03-23 15-35-01_572.png",   categories: ["portrait"]     },
+  { filename: "Cyberpunk2077 2026-03-23 16-48-30_051.png",   categories: ["artsy"]        },
   { filename: "Cyberpunk2077 2026-03-23 18-18-01_194.png",   categories: ["artsy"]    },
   { filename: "Cyberpunk2077 2026-03-23 20-58-15_877.png",   categories: ["artsy"]    },
   { filename: "Cyberpunk2077 2026-04-03 03-22-53_957.png",   categories: ["artsy"]    },
@@ -158,6 +166,7 @@ const RAW: { filename: string; categories: Category[] }[] = [
   { filename: "Cyberpunk2077 2026-05-22 10-51-39_260.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2026-05-22 11-38-08_638.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2026-05-22 12-33-34_343_3x4.png", categories: ["portrait"]   },
+  { filename: "Cyberpunk2077 2026-05-23 10-39-59_382.png",   categories: ["portrait"]     },
 ];
 
 export function parsePhotos(): Photo[] {
@@ -168,7 +177,9 @@ export function parsePhotos(): Photo[] {
       date,
       month: toMonthLabel(date),
       categories: entry.categories,
-      url: `https://ydaih1mg4buuava3.public.blob.vercel-storage.com/${encodeURIComponent(entry.filename)}`,
+      url: entry.categories.includes("bw")
+        ? `https://pub-e8e289d8d33e4c5ea574ea0ee67999a3.r2.dev/B%26W/${encodeURIComponent(entry.filename)}`
+        : `https://pub-e8e289d8d33e4c5ea574ea0ee67999a3.r2.dev/${encodeURIComponent(entry.filename)}`,
     };
   }).sort((a, b) => b.date.getTime() - a.date.getTime()); // newest first
 }
