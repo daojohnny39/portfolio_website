@@ -9,11 +9,11 @@ import { GitHubIcon } from "@/components/ui/GitHubIcon";
 
 export function Contact() {
   return (
-    <section id="contact" className="py-24 md:py-32">
+    <section id="contact" className="py-12 md:py-16">
       <div className="mx-auto w-full max-w-container px-5 md:px-6">
         <SectionHeading label="Contact" title="Let's build something." />
 
-        <RevealOnView className="mt-10 max-w-4xl" y={28}>
+        <RevealOnView className="mt-5 max-w-4xl" y={28}>
           <p className="font-heading text-40 leading-tight text-fg md:text-64">
             Open to software engineering roles, careful product work, and
             systems that need a sharp interface.

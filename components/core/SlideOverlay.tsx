@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 import { EASE_OUT } from "@/lib/motion";
 
@@ -11,6 +12,14 @@ interface SlideOverlayProps {
 }
 
 export function SlideOverlay({ isAnimating, direction, onComplete }: SlideOverlayProps) {
+  const hasFiredRef = useRef(false);
+
+  useEffect(() => {
+    if (isAnimating) {
+      hasFiredRef.current = false;
+    }
+  }, [isAnimating]);
+
   return (
     <div
       aria-hidden="true"
@@ -25,7 +34,12 @@ export function SlideOverlay({ isAnimating, direction, onComplete }: SlideOverla
             animate={{ x: "0%" }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.45, ease: EASE_OUT }}
-            onAnimationComplete={onComplete}
+            onAnimationComplete={() => {
+              if (!hasFiredRef.current) {
+                hasFiredRef.current = true;
+                onComplete();
+              }
+            }}
           />
         )}
       </AnimatePresence>

@@ -86,9 +86,10 @@ function computeRows(
 export interface PhotoGridProps {
   photos: Photo[];
   onPhotoClick: (photo: Photo) => void;
+  onImageLoad?: () => void;
 }
 
-export function PhotoGrid({ photos, onPhotoClick }: PhotoGridProps) {
+export function PhotoGrid({ photos, onPhotoClick, onImageLoad }: PhotoGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [aspects, setAspects] = useState<Map<string, number>>(new Map());
@@ -176,7 +177,7 @@ export function PhotoGrid({ photos, onPhotoClick }: PhotoGridProps) {
                 minWidth: 0,
               }}
             >
-              <PhotoCard photo={photo} onClick={onPhotoClick} />
+              <PhotoCard photo={photo} onClick={onPhotoClick} onLoad={onImageLoad} />
             </div>
           ))}
         </motion.div>

@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 
-import type { Category, Photo } from "@/lib/photography";
+import type { Photo } from "@/lib/photography";
 
 export interface PhotoModalProps {
   photos: Photo[];
@@ -11,14 +11,6 @@ export interface PhotoModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const CATEGORY_LABELS: Record<Category, string> = {
-  portrait: "Portrait",
-  artsy: "Artsy",
-  environment: "Environment",
-  cars: "Cars",
-  bw: "B&W",
-};
 
 export function PhotoModal({ photos, initialIndex, isOpen, onClose }: PhotoModalProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -64,9 +56,6 @@ export function PhotoModal({ photos, initialIndex, isOpen, onClose }: PhotoModal
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [goToNext, goToPrevious, isOpen, onClose]);
-
-  const category = currentPhoto?.categories[0];
-  const categoryLabel = category ? CATEGORY_LABELS[category] : "Photo";
 
   return (
     <AnimatePresence>
@@ -146,7 +135,7 @@ export function PhotoModal({ photos, initialIndex, isOpen, onClose }: PhotoModal
               />
 
               <div className="text-center text-[11px] tracking-wide text-[rgb(var(--muted))]">
-                {categoryLabel} · {currentPhoto.date.toLocaleDateString("en-US", {
+                {currentPhoto.date.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",

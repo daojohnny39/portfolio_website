@@ -35,6 +35,8 @@ export function CustomCursor() {
     let enabled = false;
     let hoveredElement: HTMLElement | null = null;
     let hoveredRect: DOMRect | null = null;
+    let lastClientX = 0;
+    let lastClientY = 0;
 
     const resetLock = () => {
       hoveredElement = null;
@@ -71,6 +73,9 @@ export function CustomCursor() {
         return;
       }
 
+      lastClientX = event.clientX;
+      lastClientY = event.clientY;
+
       const el = getInteractiveTarget(event.target);
 
       trail.style.opacity = "1";
@@ -106,18 +111,52 @@ export function CustomCursor() {
       resetLock();
     };
 
+    const handleScroll = () => {
+      if (!enabled) return;
+      const cursor = cursorRef.current;
+      const trail = trailRef.current;
+      const ring = ringRef.current;
+      if (!cursor || !trail || !ring) return;
+
+      const elUnderCursor = document.elementFromPoint(lastClientX, lastClientY);
+      const el = getInteractiveTarget(elUnderCursor);
+
+      if (el) {
+        hoveredElement = el;
+        hoveredRect = el.getBoundingClientRect();
+        trail.style.transform = `translate3d(${hoveredRect.left + hoveredRect.width / 2}px, ${hoveredRect.top + hoveredRect.height / 2}px, 0)`;
+        ring.style.width = `${hoveredRect.width + 12}px`;
+        ring.style.height = `${hoveredRect.height + 12}px`;
+        ring.style.borderRadius = "8px";
+        cursor.style.opacity = "0";
+        cursor.classList.add("custom-cursor--locked");
+        trail.classList.add("custom-cursor--locked");
+        trail.style.opacity = "1";
+        cursor.classList.add("custom-cursor--interactive");
+        trail.classList.add("custom-cursor--interactive");
+      } else if (hoveredElement) {
+        resetLock();
+        cursor.style.opacity = "1";
+        trail.style.transform = `translate3d(${lastClientX}px, ${lastClientY}px, 0)`;
+        cursor.classList.remove("custom-cursor--interactive");
+        trail.classList.remove("custom-cursor--interactive");
+      }
+    };
+
     updateEnabled();
 
     finePointerQuery.addEventListener("change", updateEnabled);
     reduceMotionQuery.addEventListener("change", updateEnabled);
     document.addEventListener("pointermove", handlePointerMove, { passive: true });
     document.addEventListener("pointerleave", handlePointerLeave);
+    window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
 
     return () => {
       finePointerQuery.removeEventListener("change", updateEnabled);
       reduceMotionQuery.removeEventListener("change", updateEnabled);
       document.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("pointerleave", handlePointerLeave);
+      window.removeEventListener("scroll", handleScroll, true);
       document.body.classList.remove("custom-cursor-active");
     };
   }, [isPhotographyRoute]);

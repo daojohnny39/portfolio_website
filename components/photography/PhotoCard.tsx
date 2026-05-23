@@ -1,24 +1,14 @@
 "use client";
 
-import type { Category, Photo } from "@/lib/photography";
+import type { Photo } from "@/lib/photography";
 
 export interface PhotoCardProps {
   photo: Photo;
   onClick: (photo: Photo) => void;
+  onLoad?: () => void;
 }
 
-const CATEGORY_LABELS: Record<Category, string> = {
-  portrait: "Portrait",
-  artsy: "Artsy",
-  environment: "Environment",
-  cars: "Cars",
-  bw: "B&W",
-};
-
-export function PhotoCard({ photo, onClick }: PhotoCardProps) {
-  const category = photo.categories[0];
-  const categoryLabel = category ? CATEGORY_LABELS[category] : "Photo";
-
+export function PhotoCard({ photo, onClick, onLoad }: PhotoCardProps) {
   return (
     <button
       type="button"
@@ -34,14 +24,11 @@ export function PhotoCard({ photo, onClick }: PhotoCardProps) {
         })}`}
         loading="lazy"
         decoding="async"
+        onLoad={onLoad}
         className="block h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
       />
 
       <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
-
-      <div className="pointer-events-none absolute bottom-3 left-3 translate-y-1 text-[10px] font-medium uppercase tracking-widest text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-        {categoryLabel}
-      </div>
     </button>
   );
 }

@@ -8,7 +8,7 @@ export function Experience() {
       <div className="mx-auto w-full max-w-container px-5 md:px-6">
         <SectionHeading label="Experience" title="Where I've worked." />
 
-        <div className="mt-14 space-y-12 md:mt-20 md:space-y-16">
+        <div className="mt-6 space-y-12 md:mt-8 md:space-y-16">
           {experience.map((item, index) => (
             <ExperienceItem
               key={`${item.org}-${item.title}`}

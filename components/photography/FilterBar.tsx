@@ -31,7 +31,7 @@ export function FilterBar({
   const categories = getCategories();
 
   return (
-    <section className="sticky top-16 z-30 border-b border-[rgb(var(--border))] bg-[rgb(var(--bg))]/95 backdrop-blur-sm">
+    <section className="sticky top-0 z-30 border-b border-[rgb(var(--border))] bg-[rgb(var(--bg))]/95 backdrop-blur-sm">
       <div className="space-y-2.5 px-4 py-3 md:px-6">
         <div className="flex gap-2 overflow-x-auto pb-0.5" aria-label="Photo categories">
           <button

@@ -12,17 +12,6 @@ import {
 } from "@/lib/motion";
 import { personal, skills } from "@/lib/data";
 
-type QuickFact = {
-  label: string;
-  value: string;
-};
-
-const quickFacts: QuickFact[] = [
-  { label: "Location", value: personal.location },
-  { label: "Focus", value: "Full-stack + AI/ML" },
-  { label: "Status", value: "CS @ UMKC, 3.8 GPA" },
-];
-
 const pillContainer: Variants = {
   hidden: {},
   visible: {
@@ -70,7 +59,7 @@ export function About() {
           title="Building things that work."
         />
 
-        <div className="mt-10 max-w-[820px]">
+        <div className="mt-5 max-w-[820px]">
           <RevealOnView
             as="p"
             className="max-w-[65ch] text-18 leading-relaxed text-muted md:text-24"
@@ -78,24 +67,6 @@ export function About() {
             <span className="text-fg">{leadClause}</span>
             {supportingBio}
           </RevealOnView>
-        </div>
-
-        <div className="mt-10 grid gap-3 sm:grid-cols-3">
-          {quickFacts.map((fact, index) => (
-            <RevealOnView
-              key={fact.label}
-              as="article"
-              delay={0.06 * index}
-              y={18}
-              data-cursor
-              className="rounded-lg border border-border bg-surface p-4 transition duration-300 hover:border-accent hover:bg-surface-2 md:p-5"
-            >
-              <p className="font-heading text-12 font-semibold uppercase tracking-widest text-muted">
-                {fact.label}
-              </p>
-              <p className="mt-3 text-16 leading-snug text-fg">{fact.value}</p>
-            </RevealOnView>
-          ))}
         </div>
 
         <div
@@ -126,7 +97,7 @@ export function About() {
                 delay={index * 0.06}
                 y={24}
                 data-cursor
-                className="rounded-lg border border-border bg-surface p-6 transition-colors duration-300 hover:border-accent"
+                className="rounded-lg border border-border bg-surface p-6 transition duration-300 hover:border-accent hover:bg-surface-2"
               >
                 <h4 className="font-heading text-18 text-fg">{group}</h4>
 
@@ -142,7 +113,7 @@ export function About() {
                       key={item}
                       variants={shouldReduceMotion ? undefined : pillReveal}
                     >
-                      <span className="inline-flex rounded-full border border-border bg-surface px-3 py-1.5 text-14 text-muted transition-colors duration-300 hover:border-accent hover:text-fg">
+                      <span className="inline-flex rounded-full border border-border bg-surface px-3 py-1.5 text-14 text-muted">
                         {item}
                       </span>
                     </motion.li>

@@ -18,47 +18,48 @@ const NAV_LINKS = [
   { label: "Contact", href: "#contact" },
 ] as const;
 
-const SECTION_IDS = ["intro", "hero", "about", "experience", "projects", "education", "contact"] as const;
+const SECTION_IDS = ["intro", "about", "experience", "projects", "education", "contact"] as const;
 
 const focusRing =
   "outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
-const desktopNavWidth = {
-  collapsed: 48,
-  expanded: 220,
-} as const;
+const desktopNavWidth = 220;
 
-const desktopNavHeight = {
-  collapsed: 200,
-  expanded: 320,
-  wheel: 380,
-} as const;
+const desktopNavHeight = 520;
 
 export function TopNav() {
   const router = useRouter();
   const { triggerTransition } = useFoldTransition();
   const shouldReduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
-  const [activeId, setActiveId] = useState<(typeof SECTION_IDS)[number]>("hero");
+  const [activeId, setActiveId] = useState<(typeof SECTION_IDS)[number]>("intro");
   const [isScrolled, setIsScrolled] = useState(false);
   const [isWheelMode, setIsWheelMode] = useState(false);
   const [isWheelHovered, setIsWheelHovered] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dialIndex, setDialIndex] = useState<number | null>(null);
-  const navScrollRef = useRef<HTMLDivElement | null>(null);
   const navContainerRef = useRef<HTMLDivElement | null>(null);
   const navItemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const isMenuOpenRef = useRef(false);
   const dialIndexRef = useRef(0);
-  const wheelDebounceRef = useRef(0);
-  const activeNavId = activeId === "hero" ? "intro" : activeId;
+  const [sectionProgress, setSectionProgress] = useState<number[]>(new Array(SECTION_IDS.length - 1).fill(0));
+  const sectionBoundsRef = useRef<{ top: number; height: number }[]>([]);
+  const activeNavId = activeId;
   const activeIndex = Math.max(
     0,
     NAV_LINKS.findIndex((link) => link.href.slice(1) === activeNavId),
   );
   const effectiveIndex = dialIndex ?? activeIndex;
   dialIndexRef.current = effectiveIndex;
+
+  let smoothScrollPosition = 0;
+  for (let i = sectionProgress.length - 1; i >= 0; i--) {
+    if (sectionProgress[i] > 0) {
+      smoothScrollPosition = i + Math.min(1, sectionProgress[i]);
+      break;
+    }
+  }
 
   useEffect(() => {
     isMenuOpenRef.current = isMenuOpen;
@@ -81,12 +82,17 @@ export function TopNav() {
     setIsScrolled(latest > 24);
     setIsWheelMode(latest > 300);
 
+    const progress = sectionBoundsRef.current.map(({ top, height }) =>
+      Math.min(1, Math.max(0, (latest - top) / height))
+    );
+    if (progress.length > 0) setSectionProgress(progress);
+
     if (shouldReduceMotion || isMenuOpenRef.current) {
       setIsHidden(false);
       return;
     }
 
-    setIsHidden(latest > 80 && latest > previous);
+    setIsHidden(latest > 80);
   });
 
   useEffect(() => {
@@ -118,26 +124,26 @@ export function TopNav() {
   }, []);
 
   useEffect(() => {
-    if (isWheelMode) {
-      return;
-    }
-
-    const container = navScrollRef.current;
-    const item = navItemRefs.current[activeId];
-
-    if (!container || !item) {
-      return;
-    }
-
-    const frame = window.requestAnimationFrame(() => {
-      container.scrollTo({
-        top: Math.max(0, item.offsetTop - container.clientHeight / 2 + item.clientHeight / 2),
-        behavior: shouldReduceMotion ? "auto" : "smooth",
-      });
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [activeId, isWheelMode, shouldReduceMotion]);
+    const computeBounds = () => {
+      const bounds: { top: number; height: number }[] = [];
+      for (let i = 0; i < SECTION_IDS.length - 1; i++) {
+        const section = document.getElementById(SECTION_IDS[i]);
+        const nextSection = document.getElementById(SECTION_IDS[i + 1]);
+        if (section && nextSection) {
+          bounds.push({
+            top: section.offsetTop,
+            height: nextSection.offsetTop - section.offsetTop,
+          });
+        } else {
+          bounds.push({ top: 0, height: 1 });
+        }
+      }
+      sectionBoundsRef.current = bounds;
+    };
+    computeBounds();
+    window.addEventListener("resize", computeBounds);
+    return () => window.removeEventListener("resize", computeBounds);
+  }, []);
 
   const handleMobilePhotographyClick = () => {
     setIsMenuOpen(false);
@@ -179,200 +185,122 @@ export function TopNav() {
   }, [isMenuOpen]);
 
   useEffect(() => {
-    if (isWheelHovered) {
+    if (isWheelMode && !isWheelHovered) {
       document.body.setAttribute("data-wheel-nav-expanded", "");
     } else {
       document.body.removeAttribute("data-wheel-nav-expanded");
     }
 
     return () => document.body.removeAttribute("data-wheel-nav-expanded");
-  }, [isWheelHovered]);
+  }, [isWheelMode, isWheelHovered]);
 
-  useEffect(() => {
-    const container = navContainerRef.current;
-
-    if (!container || !isWheelHovered) {
-      return;
-    }
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-
-      const now = Date.now();
-
-      if (now - wheelDebounceRef.current < 350) {
-        return;
-      }
-
-      wheelDebounceRef.current = now;
-
-      const direction = e.deltaY > 0 ? -1 : 1;
-      const currentIndex = dialIndexRef.current;
-      const newIndex = Math.max(0, Math.min(NAV_LINKS.length - 1, currentIndex + direction));
-
-      if (newIndex === currentIndex) {
-        return;
-      }
-
-      setDialIndex(newIndex);
-    };
-
-    container.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => container.removeEventListener("wheel", handleWheel);
-  }, [isWheelHovered]);
 
   return (
     <>
       <motion.header
         className={cn(
-          "fixed left-0 top-1/2 z-50 hidden md:block",
+          "fixed left-0 top-[40%] z-50 hidden md:block",
           "px-2 py-4",
         )}
         animate={{
-          width: desktopNavWidth.expanded,
-          x: 0,
+          width: desktopNavWidth,
+          x: isWheelMode ? 0 : -desktopNavWidth,
           y: "-50%",
+          opacity: isWheelMode ? 1 : 0,
         }}
+        style={{ pointerEvents: isWheelMode ? "auto" : "none" }}
         transition={shouldReduceMotion ? { duration: 0 } : spring}
       >
         <nav aria-label="Primary navigation" className="flex flex-col items-start gap-3">
           <motion.div
             ref={navContainerRef}
-            className={cn("w-full", isWheelHovered ? "overflow-visible" : "overflow-hidden")}
+            className="w-full overflow-hidden"
             animate={{
-              height: isWheelHovered ? 600 : (isWheelMode ? desktopNavHeight.wheel : desktopNavHeight.expanded),
+              height: !isWheelHovered ? 420 : desktopNavHeight,
             }}
             transition={shouldReduceMotion ? { duration: 0 } : spring}
-            onMouseEnter={() => { if (isWheelMode) { setIsWheelHovered(true); setDialIndex(activeIndex); } }}
+            onMouseEnter={() => { setIsWheelHovered(true); setDialIndex(2); }}
             onMouseLeave={() => { setIsWheelHovered(false); setDialIndex(null); }}
             style={{
-              maskImage: isWheelHovered
-                ? "none"
-                : "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
-              WebkitMaskImage: isWheelHovered
-                ? "none"
-                : "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+              maskImage: !isWheelHovered
+                ? "linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)"
+                : "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)",
+              WebkitMaskImage: !isWheelHovered
+                ? "linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)"
+                : "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)",
             }}
           >
-            <div className="relative h-full">
-              <AnimatePresence initial={false}>
-                {!isWheelMode ? (
+            <div className="relative h-full w-full py-8">
+              {NAV_LINKS.slice(0, -1).map((_, index) => {
+                const barOffset = (index - smoothScrollPosition) * 180 - 8;
+                const barDist = Math.abs(index - smoothScrollPosition);
+                return (
                   <motion.div
-                    key="flat-nav"
-                    className="absolute inset-0"
-                    initial={shouldReduceMotion ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    key={`progress-${index}`}
+                    className="absolute left-[6px] top-1/2 w-[2px] overflow-hidden rounded-full"
+                    animate={{
+                      translateY: isWheelHovered ? 0 : barOffset,
+                      height: isWheelHovered ? 0 : 200,
+                      opacity: isWheelHovered ? 0 : (index === 0 ? 0 : Math.max(0, 1 - barDist)),
+                    }}
                     transition={shouldReduceMotion ? { duration: 0 } : spring}
                   >
-                    <div
-                      ref={navScrollRef}
-                      className="relative h-full overflow-y-auto py-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                    >
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        {NAV_LINKS.map((link) => {
-                          const id = link.href.slice(1);
-                          const isActive = activeId === id || (id === "intro" && activeId === "hero");
-
-                          return (
-                            <a
-                              key={link.href}
-                              ref={(element) => {
-                                navItemRefs.current[id] = element;
-                              }}
-                              href={link.href}
-                              data-cursor
-                              aria-label={link.label}
-                              aria-current={isActive ? "location" : undefined}
-                              onClick={id === "intro" ? handleIntroClick : undefined}
-                              className={cn(
-                                focusRing,
-                                "group relative flex h-9 w-full items-center rounded-full border text-12 font-medium uppercase tracking-[0.18em] transition-colors duration-200",
-                                "justify-start gap-2 px-3",
-                                isActive
-                                  ? "border-transparent font-semibold text-white"
-                                  : "border-transparent text-muted hover:border-border hover:bg-bg/30 hover:text-fg",
-                              )}
-                            >
-                              <span
-                                aria-hidden="true"
-                                className={cn(
-                                  "h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-200",
-                                  isActive ? "scale-125 bg-accent" : "bg-muted group-hover:bg-fg",
-                                )}
-                              />
-                              <motion.span
-                                className="overflow-hidden whitespace-nowrap"
-                                animate={{
-                                  maxWidth: 150,
-                                  opacity: 1,
-                                }}
-                                transition={shouldReduceMotion ? { duration: 0 } : spring}
-                              >
-                                {link.label}
-                              </motion.span>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    </div>
+                    <div className="absolute inset-0 rounded-full bg-blue-500/20" />
+                    <motion.div
+                      className="absolute inset-x-0 top-0 rounded-full bg-blue-500"
+                      animate={{ height: `${sectionProgress[index] * 100}%` }}
+                      transition={{ duration: 0.05, ease: "linear" }}
+                    />
                   </motion.div>
-                ) : (
-                  <motion.div
-                    key="wheel-nav"
-                    className="absolute inset-0 py-8"
-                    initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
+                );
+              })}
+              {NAV_LINKS.map((link, index) => {
+                const id = link.href.slice(1);
+                const wheelOffset = index - effectiveIndex;
+                const scrollOffset = (index - smoothScrollPosition) * 180;
+                const scrollDist = Math.abs(index - smoothScrollPosition);
+                const isActive = index === activeIndex;
+                const isHiddenOnWheel = false;
+
+                return (
+                  <motion.a
+                    key={link.href}
+                    ref={(element) => {
+                      navItemRefs.current[id] = element;
+                    }}
+                    href={link.href}
+                    data-cursor
+                    aria-label={link.label}
+                    aria-current={isActive ? "location" : undefined}
+                    onClick={id === "intro" ? handleIntroClick : undefined}
+                    className={cn(
+                      focusRing,
+                      "group absolute left-0 top-1/2 flex h-9 w-full items-center justify-start rounded-full px-3 text-12 font-medium uppercase tracking-[0.18em] text-muted transition-colors duration-200 hover:text-fg",
+                      isActive && "font-semibold text-white",
+                    )}
+                    animate={{
+                      y: "-50%",
+                      rotateX: 0,
+                      translateY: !isWheelHovered
+                        ? scrollOffset
+                        : wheelOffset * 44,
+                      translateZ: 0,
+                      opacity: !isWheelHovered
+                        ? (index === 0 ? 0 : Math.max(0, 1 - scrollDist))
+                        : 1,
+                      fontSize: !isWheelHovered ? "1.25rem" : "0.875rem",
+                      pointerEvents: !isWheelHovered && (scrollDist > 0.8 || index === 0) ? "none" : "auto",
+                    }}
                     transition={shouldReduceMotion ? { duration: 0 } : spring}
+                    style={{
+                      transformOrigin: "50% 50%",
+                      fontSize: "0.875rem",
+                    }}
                   >
-                    <div className="relative h-full w-full">
-                      {NAV_LINKS.map((link, index) => {
-                        const id = link.href.slice(1);
-                        const offset = index - effectiveIndex;
-                        const isActive = offset === 0;
-                        const isHiddenOnWheel = !isWheelHovered && Math.abs(offset) >= 3;
-
-                        return (
-                          <motion.a
-                            key={link.href}
-                            ref={(element) => {
-                              navItemRefs.current[id] = element;
-                            }}
-                            href={link.href}
-                            data-cursor
-                            aria-label={link.label}
-                            aria-current={isActive ? "location" : undefined}
-                            onClick={id === "intro" ? handleIntroClick : undefined}
-                            className={cn(
-                              focusRing,
-                              "group absolute left-0 top-1/2 flex h-9 w-full items-center justify-start rounded-full px-3 text-12 font-medium uppercase tracking-[0.18em] text-muted transition-colors duration-200 hover:text-fg",
-                              isActive && "font-semibold text-white",
-                            )}
-                            animate={{
-                              y: "-50%",
-                              rotateX: 0,
-                              translateY: offset * (isWheelHovered ? 76 : 62),
-                              translateZ: 0,
-                              opacity: isHiddenOnWheel ? 0 : isWheelHovered ? Math.max(0.4, 1 - Math.abs(offset) * 0.18) : Math.max(0, 1 - Math.abs(offset) * 0.35),
-                              fontSize: isWheelHovered ? "1.25rem" : "0.875rem",
-                              pointerEvents: isHiddenOnWheel ? "none" : "auto",
-                            }}
-                            transition={shouldReduceMotion ? { duration: 0 } : spring}
-                            style={{
-                              transformOrigin: "50% 50%",
-                              fontSize: "0.875rem",
-                            }}
-                          >
-                            {link.label}
-                          </motion.a>
-                        );
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    {link.label}
+                  </motion.a>
+                );
+              })}
             </div>
           </motion.div>
 

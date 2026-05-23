@@ -1,11 +1,11 @@
 export const personal = {
-  name: "Nhat (Johnny) Dao",
+  name: "Johnny Dao",
   title: "CS @ UMKC · Software Developer",
   location: "Shawnee, KS",
   phone: "(913) 432-8888",
   email: "JohnnyMDao@gmail.com",
   github: "https://github.com/daojohnny39",
-  bio: "Computer Science student at UMKC with a 3.8 GPA, building full-stack apps and doing AI/ML research. Passionate about clean code, systems design, and turning ideas into working software.",
+  bio: "Computer Science student at UMKC with a 3.8 GPA, focused on full-stack development and AI/ML. Looking to contribute to meaningful projects and grow as a software engineer.",
 };
 
 export const experience = [
@@ -89,6 +89,20 @@ export const education = [
     period: "Aug. 2020 – Dec. 2024",
     location: "Overland Park, KS",
   },
+  {
+    school: "Johnson County Community College",
+    degree: "General Sciences – Associate of Science",
+    gpa: null,
+    period: "Aug. 2020 – Dec. 2024",
+    location: "Overland Park, KS",
+  },
+  {
+    school: "Johnson County Community College",
+    degree: "Liberal Arts – Associate of Arts",
+    gpa: null,
+    period: "Aug. 2020 – Dec. 2024",
+    location: "Overland Park, KS",
+  }
 ];
 
 export const hobbies: string[] = [

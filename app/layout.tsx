@@ -21,7 +21,7 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: "Johnny Dao — Portfolio",
-  description: "Nhat (Johnny) Dao — CS @ UMKC, Software Developer",
+  description: "Johnny Dao — CS @ UMKC, Software Developer",
 };
 
 export default function RootLayout({

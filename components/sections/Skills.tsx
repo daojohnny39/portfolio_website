@@ -51,36 +51,39 @@ export function Skills() {
           initial={shouldReduceMotion ? undefined : "hidden"}
           whileInView={shouldReduceMotion ? undefined : "visible"}
           viewport={revealViewport}
-          className="mt-14 grid gap-5 md:mt-20 md:grid-cols-2 md:gap-6 lg:grid-cols-3"
+          className="mt-6 grid gap-5 md:mt-8 md:grid-cols-2 md:gap-6 lg:grid-cols-3"
         >
           {skillGroups.map(([group, items], index) => (
             <RevealOnView
-              as="article"
               key={group}
               delay={index * 0.06}
               y={24}
-              className="rounded-lg border border-border bg-surface p-6 transition-colors duration-300 hover:border-accent"
             >
-              <h3 className="font-heading text-18 text-fg">{group}</h3>
-
-              <motion.ul
-                variants={shouldReduceMotion ? undefined : pillContainer}
-                initial={shouldReduceMotion ? undefined : "hidden"}
-                whileInView={shouldReduceMotion ? undefined : "visible"}
-                viewport={revealViewport}
-                className="pointer-events-none mt-6 flex flex-wrap gap-2.5"
+              <article
+                data-cursor
+                className="rounded-lg border border-border bg-surface p-6"
               >
-                {items.map((item) => (
-                  <motion.li
-                    key={item}
-                    variants={shouldReduceMotion ? undefined : pillReveal}
-                  >
-                    <span className="inline-flex rounded-full border border-border bg-surface px-3 py-1.5 text-14 text-muted">
-                      {item}
-                    </span>
-                  </motion.li>
-                ))}
-              </motion.ul>
+                <h3 className="font-heading text-18 text-fg">{group}</h3>
+
+                <motion.ul
+                  variants={shouldReduceMotion ? undefined : pillContainer}
+                  initial={shouldReduceMotion ? undefined : "hidden"}
+                  whileInView={shouldReduceMotion ? undefined : "visible"}
+                  viewport={revealViewport}
+                  className="pointer-events-none mt-6 flex flex-wrap gap-2.5"
+                >
+                  {items.map((item) => (
+                    <motion.li
+                      key={item}
+                      variants={shouldReduceMotion ? undefined : pillReveal}
+                    >
+                      <span className="inline-flex rounded-full border border-border bg-surface px-3 py-1.5 text-14 text-muted">
+                        {item}
+                      </span>
+                    </motion.li>
+                  ))}
+                </motion.ul>
+              </article>
             </RevealOnView>
           ))}
         </motion.div>

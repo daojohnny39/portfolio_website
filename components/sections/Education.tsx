@@ -4,11 +4,11 @@ import { education } from "@/lib/data";
 
 export function Education() {
   return (
-    <section id="education" className="py-24 md:py-32">
+    <section id="education" className="py-12 md:py-16">
       <div className="mx-auto w-full max-w-container px-5 md:px-6">
         <SectionHeading label="Education" title="Education." />
 
-        <div className="mt-14 grid gap-5 md:mt-20 md:grid-cols-2 md:gap-6">
+        <div className="mt-6 grid gap-5 md:mt-8 md:grid-cols-2 md:gap-6">
           {education.map((item, index) => (
             <RevealOnView
               as="article"
