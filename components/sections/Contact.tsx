@@ -13,18 +13,8 @@ export function Contact() {
       <div className="mx-auto w-full max-w-container px-5 md:px-6">
         <SectionHeading label="Contact" title="Let's build something." />
 
-        <RevealOnView className="mt-5 max-w-4xl" y={28}>
-          <p className="font-heading text-40 leading-tight text-fg md:text-64">
-            Open to software engineering roles, careful product work, and
-            systems that need a sharp interface.
-          </p>
-
-          <p className="mt-6 max-w-2xl text-16 leading-relaxed text-muted md:text-18">
-            Based in {personal.location}. Send a note if you want to talk about
-            a role, a project, or a thoughtful web experience.
-          </p>
-
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+        <RevealOnView className="mt-8 max-w-4xl" y={28}>
+          <div className="flex flex-col gap-3 sm:flex-row">
             <a
               href={`mailto:${personal.email}`}
               data-cursor

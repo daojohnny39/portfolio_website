@@ -8,7 +8,7 @@ import { useFoldTransition } from "@/components/core/Providers";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-const SECTION_IDS = ["intro", "about", "experience", "projects", "skills", "education", "contact"] as const;
+const SECTION_IDS = ["intro", "experience", "projects", "skills", "education", "contact"] as const;
 
 const focusRing =
   "outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";

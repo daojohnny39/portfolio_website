@@ -11,14 +11,13 @@ import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { label: "Intro", href: "#intro" },
-  { label: "About", href: "#about" },
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
   { label: "Education", href: "#education" },
   { label: "Contact", href: "#contact" },
 ] as const;
 
-const SECTION_IDS = ["intro", "about", "experience", "projects", "education", "contact"] as const;
+const SECTION_IDS = ["intro", "experience", "projects", "education", "contact"] as const;
 
 const focusRing =
   "outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
@@ -44,6 +43,7 @@ export function TopNav() {
   const isMenuOpenRef = useRef(false);
   const dialIndexRef = useRef(0);
   const [sectionProgress, setSectionProgress] = useState<number[]>(new Array(SECTION_IDS.length - 1).fill(0));
+  const visibleSectionsRef = useRef(new Set<string>());
   const sectionBoundsRef = useRef<{ top: number; height: number }[]>([]);
   const activeNavId = activeId;
   const activeIndex = Math.max(
@@ -106,14 +106,24 @@ export function TopNav() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visibleEntry = entries.find((entry) => entry.isIntersecting);
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            visibleSectionsRef.current.add(entry.target.id);
+          } else {
+            visibleSectionsRef.current.delete(entry.target.id);
+          }
+        }
 
-        if (visibleEntry?.target.id && SECTION_IDS.includes(visibleEntry.target.id as (typeof SECTION_IDS)[number])) {
-          setActiveId(visibleEntry.target.id as (typeof SECTION_IDS)[number]);
+        const lastVisible = [...SECTION_IDS].reverse().find(
+          (id) => visibleSectionsRef.current.has(id),
+        );
+
+        if (lastVisible) {
+          setActiveId(lastVisible as (typeof SECTION_IDS)[number]);
         }
       },
       {
-        rootMargin: "-35% 0px -55% 0px",
+        rootMargin: "10% 0px -100% 0px",
         threshold: 0,
       },
     );

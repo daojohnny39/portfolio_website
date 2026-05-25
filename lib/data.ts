@@ -70,7 +70,7 @@ export const skills: Record<string, string[]> = {
   "Programming Languages": ["Python", "C/C++", "JavaScript", "HTML/CSS", "SQL"],
   "Frameworks & Libraries": ["FastAPI", "Django", "React", "Node.js/Express", "SwiftUI", "pandas", "NumPy", "Matplotlib"],
   "Databases": ["PostgreSQL", "SQLite", "Django ORM"],
-  "Developer Tools": ["Git", "VS Code", "Visual Studio", "XCode", "IntelliJ", "Unity"],
+  "Developer Tools": ["Git", "VS Code", "Visual Studio", "XCode", "IntelliJ", "Unity", "Claude Code", "Codex"],
   "OS & Scripting": ["UNIX/Linux", "Bash"],
 };
 

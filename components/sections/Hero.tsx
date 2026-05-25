@@ -109,8 +109,10 @@ export function Hero() {
               className="mt-8 max-w-2xl"
             >
               <p className="text-18 leading-relaxed text-fg md:text-24">
-                {personal.title} building full-stack products and AI/ML
-                research tools.
+                Computer Science student at UMKC with a 3.8 GPA, focused on{" "}
+                <em>full-stack development</em> and <em>AI/ML</em>. Looking to
+                contribute to <em>meaningful projects</em> and <em>grow</em> as
+                a software engineer.
               </p>
 
               <p className="mt-3 flex items-center gap-2 text-14 text-muted md:text-16">

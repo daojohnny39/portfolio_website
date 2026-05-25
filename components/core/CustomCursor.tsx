@@ -7,9 +7,10 @@ const INTERACTIVE_SELECTOR =
   "a, button, [data-cursor], input, textarea, select, summary, [role='button']";
 
 function getInteractiveTarget(target: EventTarget | null) {
-  return target instanceof Element
-    ? (target.closest(INTERACTIVE_SELECTOR) as HTMLElement | null)
-    : null;
+  if (!(target instanceof Element)) return null;
+  const cursorEl = target.closest("[data-cursor]") as HTMLElement | null;
+  if (cursorEl) return cursorEl;
+  return target.closest(INTERACTIVE_SELECTOR) as HTMLElement | null;
 }
 
 export function CustomCursor() {
