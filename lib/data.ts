@@ -16,8 +16,9 @@ export const experience = [
     period: "Mar. 2025 – Present",
     bullets: [
       "Built a 146-question, 21-section React/Vite/Express survey app with shared TypeScript schemas, conditional logic, autosave, and CSV export.",
-      "Curated a 1,061,562-item Claude Code corpus across 3 substrates: skills (1,030,755), MCP servers (25,052), and plugins (5,755).",
+      "Authored a Jupyter reproducibility notebook validating L0–L3 severity tiering across 1M+ corpus items; applied 2-of-3 majority consensus across DeBERTa-v3, ModernBERT, and DistilBERT classifiers with Wilson 95% confidence intervals.",
       "Ran 3-classifier severity analysis on 127,986 rich items; reported L3 rates of 1.96% skills, 0.66% MCP, and 4.17% plugins.",
+      "Developed a self-contained 9-section validation notebook reproducing all key statistical claims from the paper draft, covering severity distributions, 3-model agreement, Defender gold recall, and trust-signal correlations to support peer reproducibility.",
     ],
   },
   {
@@ -34,6 +35,16 @@ export const experience = [
 ];
 
 export const projects = [
+  {
+    name: "Portfolio Website",
+    stack: ["Next.js", "TypeScript", "React", "Tailwind CSS", "Framer Motion", "Cloudflare R2"],
+    bullets: [
+      "Built a personal portfolio site with Hero, Experience, Projects, Education, and Contact sections; deployed on Next.js 16 with TypeScript and Tailwind CSS.",
+      "Implemented custom UI components including animated loading screens, mesh background, ghost nav, and scroll-triggered reveal animations using Framer Motion.",
+      "Added a photography gallery page with category and month filtering, serving compressed images from Cloudflare R2 with critical-image preloading.",
+    ],
+    github: "https://github.com/daojohnny39/portfolio_website",
+  },
   {
     name: "CourseTrack",
     stack: ["React/Vite", "Node.js/Express", "SQLite", "JWT"],
@@ -67,8 +78,8 @@ export const projects = [
 ];
 
 export const skills: Record<string, string[]> = {
-  "Programming Languages": ["Python", "C/C++", "JavaScript", "HTML/CSS", "SQL"],
-  "Frameworks & Libraries": ["FastAPI", "Django", "React", "Node.js/Express", "SwiftUI", "pandas", "NumPy", "Matplotlib"],
+  "Programming Languages": ["Python", "C/C++", "JavaScript", "TypeScript", "HTML/CSS", "SQL"],
+  "Frameworks & Libraries": ["FastAPI", "Django", "React", "Node.js/Express", "Tailwind CSS", "SwiftUI", "pandas", "NumPy", "Matplotlib"],
   "Databases": ["PostgreSQL", "SQLite", "Django ORM"],
   "Developer Tools": ["Git", "VS Code", "Visual Studio", "XCode", "IntelliJ", "Unity", "Claude Code", "Codex"],
   "OS & Scripting": ["UNIX/Linux", "Bash"],

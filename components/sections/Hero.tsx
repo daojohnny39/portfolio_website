@@ -78,15 +78,6 @@ export function Hero() {
       >
         <div className="max-w-[940px]">
           <div>
-            <motion.p
-              initial={itemInitial}
-              animate={itemAnimate}
-              transition={transition(0.04)}
-              className="mb-6 font-heading text-12 font-semibold uppercase tracking-widest text-accent"
-            >
-              {personal.title}
-            </motion.p>
-
             <h1 className="font-heading text-hero font-semibold leading-[0.88] tracking-[-0.06em] text-fg">
               {headlineLines.map((line, index) => (
                 <span key={line} className="block overflow-hidden pb-2">
