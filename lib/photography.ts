@@ -18,20 +18,20 @@ function parseFilenameDate(filename: string): Date {
   const match = filename.match(/(\d{4})-(\d{2})-(\d{2}) (\d{2})-(\d{2})-(\d{2})/);
   if (!match) return new Date(0);
   const [, year, month, day, hour, min, sec] = match;
-  return new Date(
+  return new Date(Date.UTC(
     parseInt(year),
     parseInt(month) - 1,
     parseInt(day),
     parseInt(hour),
     parseInt(min),
     parseInt(sec),
-  );
+  ));
 }
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function toMonthLabel(date: Date): string {
-  return `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
+  return `${MONTH_NAMES[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
 }
 
 // Raw data — filename + categories (visually inspected)
@@ -166,9 +166,18 @@ const RAW: { filename: string; categories: Category[] }[] = [
   { filename: "Cyberpunk2077 2026-05-22 10-51-39_260.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2026-05-22 11-38-08_638.png",   categories: ["portrait"]     },
   { filename: "Cyberpunk2077 2026-05-23 10-39-59_382.png",   categories: ["portrait", "artsy"] },
+  { filename: "Cyberpunk2077 2026-06-07 16-55-52_012-compressed.jpg", categories: ["portrait"] },
   { filename: "Cyberpunk2077 2026-06-10 11-55-05_035-compressed.jpg", categories: ["portrait"] },
   { filename: "Cyberpunk2077 2026-06-10 17-17-03_750-compressed.jpg", categories: ["portrait"] },
   { filename: "Cyberpunk2077 2026-06-10 17-59-02_242-compressed.jpg", categories: ["portrait"] },
+  { filename: "Cyberpunk2077 2026-06-30 14-26-37_437-compressed.jpg", categories: ["environment"] },
+  { filename: "Cyberpunk2077 2026-06-30 16-24-03_359-compressed.jpg", categories: ["environment"] },
+  { filename: "Cyberpunk2077 2026-07-02 14-27-02_963-compressed.jpg", categories: ["artsy"] },
+  { filename: "Cyberpunk2077 2026-07-02 14-38-08_602-compressed.jpg", categories: ["artsy"] },
+  { filename: "Cyberpunk2077 2026-07-05 05-28-49_139-compressed.jpg", categories: ["environment"] },
+  { filename: "Cyberpunk2077 2026-07-05 16-57-12_837-compressed.jpg", categories: ["environment"] },
+  { filename: "Cyberpunk2077 2026-07-09 03-44-08_009-compressed.jpg", categories: ["artsy"] },
+  { filename: "Cyberpunk2077 2026-07-09 14-26-03_225-compressed.jpg", categories: ["artsy"] },
 ];
 
 export function parsePhotos(): Photo[] {

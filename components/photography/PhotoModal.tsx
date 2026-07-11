@@ -124,6 +124,7 @@ export function PhotoModal({ photos, initialIndex, isOpen, onClose }: PhotoModal
                   month: "long",
                   day: "numeric",
                   year: "numeric",
+                  timeZone: "UTC",
                 })}`}
                 className="max-h-[82vh] max-w-[85vw] object-contain"
                 initial={{ opacity: 0, scale: 0.98 }}
@@ -139,6 +140,7 @@ export function PhotoModal({ photos, initialIndex, isOpen, onClose }: PhotoModal
                   month: "short",
                   day: "numeric",
                   year: "numeric",
+                  timeZone: "UTC",
                 })}
               </div>
             </div>

@@ -21,6 +21,7 @@ export function PhotoCard({ photo, onClick, onLoad }: PhotoCardProps) {
           month: "long",
           day: "numeric",
           year: "numeric",
+          timeZone: "UTC",
         })}`}
         loading="lazy"
         decoding="async"
