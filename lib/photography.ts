@@ -177,6 +177,11 @@ const RAW: { filename: string; categories: Category[] }[] = [
   { filename: "Cyberpunk2077 2026-07-05 16-57-12_837-compressed.jpg", categories: ["environment"] },
   { filename: "Cyberpunk2077 2026-07-09 03-44-08_009-compressed.jpg", categories: ["artsy"] },
   { filename: "Cyberpunk2077 2026-07-09 14-26-03_225-compressed.jpg", categories: ["artsy"] },
+  { filename: "Cyberpunk2077 2026-07-17 03-10-18_916-compressed.jpg", categories: ["artsy"] },
+  { filename: "Cyberpunk2077 2026-07-18 13-25-42_487-compressed.jpg", categories: ["portrait"] },
+  { filename: "Cyberpunk2077 2026-07-18 14-08-16_347-compressed.jpg", categories: ["portrait"] },
+  { filename: "Cyberpunk2077 2026-07-18 15-00-23_681-compressed.jpg", categories: ["portrait"] },
+  { filename: "Cyberpunk2077 2026-07-18 15-43-53_362-compressed.jpg", categories: ["portrait"] },
 ];
 
 export function parsePhotos(): Photo[] {
