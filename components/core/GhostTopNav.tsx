@@ -1,11 +1,12 @@
 "use client";
 
-import { motion, useMotionValueEvent, useReducedMotion, useScroll } from "framer-motion";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useFoldTransition } from "@/components/core/Providers";
 import { EASE_OUT } from "@/lib/motion";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 import { cn } from "@/lib/utils";
 
 const SECTION_IDS = ["intro", "experience", "projects", "skills", "education", "contact"] as const;
@@ -16,7 +17,7 @@ const focusRing =
 export function GhostTopNav() {
   const router = useRouter();
   const { triggerTransition } = useFoldTransition();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const [activeId, setActiveId] = useState<(typeof SECTION_IDS)[number]>("intro");
   const [isHidden, setIsHidden] = useState(false);
   const { scrollY } = useScroll();

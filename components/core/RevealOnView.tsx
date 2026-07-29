@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 import {
@@ -10,6 +10,7 @@ import {
   revealViewport,
   type Variants,
 } from "@/lib/motion";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 import { cn } from "@/lib/utils";
 
 const motionElements = {
@@ -43,7 +44,7 @@ export function RevealOnView<T extends RevealElement = "div">({
   y,
   ...props
 }: RevealOnViewProps<T>) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const tag = (as ?? "div") as RevealElement;
   const Element = tag;
   const MotionElement = motionElements[tag];

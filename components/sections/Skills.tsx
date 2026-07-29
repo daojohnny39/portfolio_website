@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { RevealOnView } from "@/components/core/RevealOnView";
 import { SectionHeading } from "@/components/core/SectionHeading";
@@ -11,6 +11,7 @@ import {
   type Variants,
 } from "@/lib/motion";
 import { skills } from "@/lib/data";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 
 const pillContainer: Variants = {
   hidden: {},
@@ -38,7 +39,7 @@ const pillReveal: Variants = {
 };
 
 export function Skills() {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const skillGroups = Object.entries(skills) as Array<[string, string[]]>;
 
   return (

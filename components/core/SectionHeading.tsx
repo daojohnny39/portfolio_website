@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { clipReveal, fadeUp, revealViewport } from "@/lib/motion";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 import { cn } from "@/lib/utils";
 
 type SectionHeadingProps = {
@@ -13,7 +14,7 @@ type SectionHeadingProps = {
 };
 
 export function SectionHeading({ id, label, title, className }: SectionHeadingProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
 
   if (shouldReduceMotion) {
     return (

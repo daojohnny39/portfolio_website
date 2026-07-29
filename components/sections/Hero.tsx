@@ -4,7 +4,6 @@ import { ChevronDown, MapPin } from "lucide-react";
 import { GitHubIcon } from "@/components/ui/GitHubIcon";
 import {
   motion,
-  useReducedMotion,
   useScroll,
   useTransform,
 } from "framer-motion";
@@ -12,6 +11,7 @@ import type { MotionStyle, Transition } from "framer-motion";
 import { useRef } from "react";
 
 import { EASE_OUT } from "@/lib/motion";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 import { personal } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,7 @@ const headlineLines = ["Johnny", "Dao"] as const;
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const shouldReduceMotion = useReducedMotion() === true;
+  const shouldReduceMotion = useHydratedReducedMotion();
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -34,20 +34,16 @@ export function Hero() {
     : { y: parallaxY, opacity: parallaxOpacity };
 
   const itemInitial = shouldReduceMotion
-    ? { opacity: 0 }
+    ? { opacity: 0, y: 0 }
     : { opacity: 0, y: 18 };
 
-  const itemAnimate = shouldReduceMotion
-    ? { opacity: 1 }
-    : { opacity: 1, y: 0 };
+  const itemAnimate = { opacity: 1, y: 0 };
 
   const lineInitial = shouldReduceMotion
-    ? { opacity: 0 }
+    ? { opacity: 0, y: "0%" }
     : { opacity: 0, y: "110%" };
 
-  const lineAnimate = shouldReduceMotion
-    ? { opacity: 1 }
-    : { opacity: 1, y: "0%" };
+  const lineAnimate = { opacity: 1, y: "0%" };
 
   const transition = (delay: number): Transition => ({
     duration: shouldReduceMotion ? 0.2 : 0.72,

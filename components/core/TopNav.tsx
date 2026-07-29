@@ -1,12 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 
 import { useFoldTransition } from "@/components/core/Providers";
 import { EASE_OUT, fadeUp, spring, staggerContainer } from "@/lib/motion";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -29,7 +30,7 @@ const desktopNavHeight = 520;
 export function TopNav() {
   const router = useRouter();
   const { triggerTransition } = useFoldTransition();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const { scrollY } = useScroll();
   const [activeId, setActiveId] = useState<(typeof SECTION_IDS)[number]>("intro");
   const [isScrolled, setIsScrolled] = useState(false);

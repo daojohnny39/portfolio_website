@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { EASE_OUT } from "@/lib/motion";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 import { RevealOnView } from "@/components/core/RevealOnView";
 import { GitHubIcon } from "@/components/ui/GitHubIcon";
 
@@ -21,7 +22,7 @@ export function ProjectCard({
   github,
   index,
 }: ProjectCardProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const visibleBullets = bullets.slice(0, 3);
   const titleId = `project-${index}-title`;
 

@@ -1,11 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useFoldTransition } from "@/components/core/Providers";
 import { EASE_OUT } from "@/lib/motion";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 import { cn } from "@/lib/utils";
 
 export interface PhotographyNavProps {
@@ -18,7 +19,7 @@ const focusRing =
 export function PhotographyNav(_props: PhotographyNavProps) {
   const router = useRouter();
   const { triggerTransition } = useFoldTransition();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {

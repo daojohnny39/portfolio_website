@@ -1,9 +1,10 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useLayoutEffect, useRef, useState } from "react";
 
 import { EASE_OUT } from "@/lib/motion";
+import { useHydratedReducedMotion } from "@/lib/useHydratedReducedMotion";
 import { usePageReady } from "@/lib/usePageReady";
 
 interface LoadingScreenProps {
@@ -15,7 +16,7 @@ export function LoadingScreen({
   variant,
   criticalImages = [],
 }: LoadingScreenProps) {
-  const shouldReduceMotion = useReducedMotion() === true;
+  const shouldReduceMotion = useHydratedReducedMotion();
   const { progress, isReady } = usePageReady({
     criticalImages,
     minDisplayMs: variant === "photography" ? 800 : 600,
