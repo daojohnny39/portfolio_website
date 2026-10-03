@@ -1,5 +1,5 @@
 // Photography data for the Night City Archive
-// Categories assigned via visual inspection of each image.
+// Categories assigned by the photographer or via visual inspection.
 // To update categories, edit the `categories` array per entry.
 
 export type Category = "portrait" | "artsy" | "environment" | "cars" | "bw";
@@ -34,8 +34,8 @@ function toMonthLabel(date: Date): string {
   return `${MONTH_NAMES[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
 }
 
-// Raw data — filename + categories (visually inspected)
-const RAW: { filename: string; categories: Category[] }[] = [
+// Raw data — filename + categories; local files are bundled with the site.
+const RAW: { filename: string; categories: Category[]; source?: "local" }[] = [
   { filename: "Cyberpunk2077 2025-09-06 02-18-12_853.png",   categories: ["artsy", "portrait"] },
   { filename: "Cyberpunk2077 2025-09-20 21-54-35_883.png",   categories: ["artsy", "portrait"] },
   { filename: "Cyberpunk2077 2025-09-20 23-03-56_668.png",   categories: ["artsy", "portrait"] },
@@ -182,6 +182,15 @@ const RAW: { filename: string; categories: Category[] }[] = [
   { filename: "Cyberpunk2077 2026-07-18 14-08-16_347-compressed.jpg", categories: ["portrait"] },
   { filename: "Cyberpunk2077 2026-07-18 15-00-23_681-compressed.jpg", categories: ["portrait"] },
   { filename: "Cyberpunk2077 2026-07-18 15-43-53_362-compressed.jpg", categories: ["portrait"] },
+  { filename: "Cyberpunk2077 2026-08-24 02-59-47_363-compressed.jpg", categories: ["portrait"], source: "local" },
+  { filename: "Cyberpunk2077 2026-09-12 18-00-19_044-compressed.jpg", categories: ["environment"], source: "local" },
+  { filename: "Cyberpunk2077 2026-09-13 18-40-50_712-compressed.jpg", categories: ["portrait"], source: "local" },
+  { filename: "Cyberpunk2077 2026-09-13 19-22-42_535-compressed.jpg", categories: ["portrait"], source: "local" },
+  { filename: "Cyberpunk2077 2026-09-15 01-21-03_701-compressed.jpg", categories: ["portrait"], source: "local" },
+  { filename: "Cyberpunk2077 2026-09-19 14-12-24_406-compressed.jpg", categories: ["environment"], source: "local" },
+  { filename: "Cyberpunk2077 2026-09-19 14-34-58_613-compressed.jpg", categories: ["portrait"], source: "local" },
+  { filename: "Cyberpunk2077 2026-09-19 15-34-03_846-compressed.jpg", categories: ["environment"], source: "local" },
+  { filename: "Cyberpunk2077 2026-09-19 20-01-20_503-compressed.jpg", categories: ["portrait"], source: "local" },
 ];
 
 export function parsePhotos(): Photo[] {
@@ -192,9 +201,11 @@ export function parsePhotos(): Photo[] {
       date,
       month: toMonthLabel(date),
       categories: entry.categories,
-      url: entry.categories.includes("bw")
-        ? `https://pub-e8e289d8d33e4c5ea574ea0ee67999a3.r2.dev/B%26W/${encodeURIComponent(entry.filename)}`
-        : `https://pub-e8e289d8d33e4c5ea574ea0ee67999a3.r2.dev/${encodeURIComponent(entry.filename)}`,
+      url: entry.source === "local"
+        ? `/photography/${encodeURIComponent(entry.filename)}`
+        : entry.categories.includes("bw")
+          ? `https://pub-e8e289d8d33e4c5ea574ea0ee67999a3.r2.dev/B%26W/${encodeURIComponent(entry.filename)}`
+          : `https://pub-e8e289d8d33e4c5ea574ea0ee67999a3.r2.dev/${encodeURIComponent(entry.filename)}`,
     };
   }).sort((a, b) => b.date.getTime() - a.date.getTime()); // newest first
 }
