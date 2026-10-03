@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -130,49 +130,16 @@ export function ExperienceResearch() {
         </p>
       </header>
 
-      <dl className="mt-10 grid grid-cols-1 border-y border-border sm:grid-cols-3">
-        {[
-          { count: "100", label: "Isolated attack trials", detail: "Across two reproductions" },
-          { count: "123", label: "Malicious skill snapshots", detail: "Compared across scanners" },
-          { count: totalEntries.toLocaleString("en-US"), label: "Saved ecosystem entries", detail: "Before labeling or deduplication" },
-        ].map((metric) => (
-          // Subgrid keeps number, label and detail on shared rows when one label wraps.
-          <div key={metric.label} className="flex flex-col border-b border-border py-6 last:border-b-0 sm:row-span-3 sm:grid sm:grid-rows-subgrid sm:border-b-0 sm:border-r sm:px-5 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
-            <dt className={`${labelClass} order-2 mt-3 leading-[1.6] text-fg`}>{metric.label}</dt>
-            <dd className="order-1 font-serif text-[clamp(2.25rem,3.5vw,3rem)] leading-none tabular-nums text-fg">{metric.count}</dd>
-            <dd className="order-3 mt-1 font-label text-[0.75rem] leading-[1.5] text-muted">{metric.detail}</dd>
-          </div>
-        ))}
-      </dl>
-
-      <nav aria-label="Research topics" className="my-10 sm:my-12">
-        <p className={`${labelClass} mb-4 text-muted`}>Explore the work</p>
-        <ol className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
-          {researchChapters.map((chapter, index) => (
-            <li key={chapter.id}>
-              <a href={`#${chapter.id}`} className="research-link group flex items-center gap-3 py-2 font-label text-[0.8125rem] text-fg">
-                <span className="text-[0.625rem] tabular-nums text-muted">{String(index + 1).padStart(2, "0")}</span>
-                <span className="underline decoration-transparent underline-offset-4 group-hover:decoration-border-strong">{chapter.title}</span>
-                <ArrowDown aria-hidden="true" strokeWidth={1.5} className="ml-auto size-3 text-muted" />
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-
-      <div className="space-y-14 sm:space-y-20">
+      <div className="mt-10 space-y-14 sm:mt-12 sm:space-y-20">
         <Chapter index={0}>
           <p className={proseClass}>
-            My first contribution was helping write the malicious-extensions manuscript using the research team’s existing corpus analysis and classifier results. The paper examines more than 100,000 AI-agent extensions: how reliably models and people identify malicious components, and how execution through an agent changes the harm those components can cause.
-          </p>
-          <p className={proseClass}>
-            In August, I also reviewed submission feedback asking for testing with VirusTotal’s multiple antivirus engines alongside Microsoft Defender. I took part in the team’s discussion of that feedback; no additional antivirus experiments were run.
+            Upon joining the research group, my first contribution was helping write the malicious-extensions manuscript using the research team’s existing corpus analysis and classifier results. The paper examines more than 100,000 AI-agent extensions (skills, MCP servers, and plugins): how reliably models and people identify malicious components, and how execution through an agent changes the harm those components can cause.
           </p>
         </Chapter>
 
         <Chapter index={1}>
           <p className={proseClass}>
-            I reproduced GhostSplice, an attack that splits instructions across MCP tool descriptions and tool responses to induce an agent to send files to a collection tool. I tested GPT-5.4 and GPT-5.5 through Codex CLI at high and xhigh reasoning, with ten trials per configuration.
+            I reproduced GhostSplice, an attack that splits instructions across MCP tool descriptions and tool responses to induce an agent to send files to a collection tool. It was tested on GPT-5.4 and GPT-5.5 through Codex CLI at high and xhigh reasoning, with ten trials per configuration.
           </p>
           <ResultsTable
             caption="Codex CLI reproduction · successful exfiltration / trials"
@@ -183,7 +150,10 @@ export function ExperienceResearch() {
             ASR means attack success rate. The manuscript-era tests reported 10/10 for both models at these settings. In my later reproduction, GPT-5.4 remained at 10/10 while GPT-5.5 dropped to 0/10. These results describe the tested configurations at the time of each run.
           </Note>
           <p className={proseClass}>
-            I recorded six Codex-app demonstrations showing the model settings, approval decisions, and tool calls, and contributed to the GhostSplice MCP blog.
+            I recorded six Codex-app demonstrations showing the model settings, approval decisions, and tool calls. I also helped the group write the{" "}
+            <a href="https://asset-group.github.io/disclosures/ghostsplice/" target="_blank" rel="noopener noreferrer" className="research-link text-fg underline decoration-border-strong underline-offset-4">
+              GhostSplice disclosure<span className="sr-only"> (opens in a new tab)</span>
+            </a>.
           </p>
         </Chapter>
 
@@ -214,6 +184,24 @@ export function ExperienceResearch() {
           <p className={proseClass}>
             I also reran and recorded the experiment in the desktop app. In the video demonstration, I opened the generated <code className="break-all text-[0.8em]">token_tracker.py</code> file to show the encoded test secret. All three tested Claude Code configurations scored 0/10 in these reproduction trials.
           </p>
+          <figure>
+            <div className="aspect-video overflow-hidden border border-border bg-black">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/uDzjUy2hFN4"
+                title="GhostCommit experiment demonstration in the desktop app"
+                className="h-full w-full border-0"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+            <figcaption className="mt-3 font-label text-[0.75rem] leading-[1.6] text-muted">
+              <a href="https://youtu.be/uDzjUy2hFN4" target="_blank" rel="noopener noreferrer" className="research-link inline-flex items-center gap-1.5 text-fg underline decoration-border-strong underline-offset-4">
+                Watch on YouTube <ArrowUpRight aria-hidden="true" className="size-3" /><span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            </figcaption>
+          </figure>
         </Chapter>
 
         <Chapter index={3}>
@@ -283,7 +271,7 @@ export function ExperienceResearch() {
 
         <Chapter index={5}>
           <p className={proseClass}>
-            I prepared a brute-force skill-fuzzing framework to test exfiltration behavior with fake secrets. The evasion run stopped after scoring 121 of 123 inputs. After a parallel experiment with Murali Krish’s framework, we concluded that this fuzzing approach might not be viable.
+            I prepared a brute-force skill-fuzzing framework to test exfiltration behavior with fake secrets. The evasion run stopped after scoring 121 of 123 inputs. After a parallel experiment with my coworker&apos;s framework, we concluded that this fuzzing approach might not be viable.
           </p>
           <p className={proseClass}>
             <cite>Under the Hood of SKILL.md</cite>, <cite>Cloak and Detonate</cite>, <cite>Proteus</cite>, and <cite>SkillMutator</cite> helped frame the next question: if a skill is changed to evade a scanner, does the attack still work when an agent executes it?
