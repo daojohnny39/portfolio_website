@@ -14,10 +14,17 @@ const config: Config = {
         border: "rgb(var(--border) / <alpha-value>)",
         accent: "rgb(var(--accent) / <alpha-value>)",
         "accent-dim": "rgb(var(--accent-dim) / <alpha-value>)",
+        // Home page only; defined under .home-theme in globals.css
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        "fg-soft": "rgb(var(--fg-soft) / <alpha-value>)",
+        "border-strong": "rgb(var(--border-strong) / <alpha-value>)",
+        "on-ink-muted": "rgb(var(--on-ink-muted) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-space-grotesk)", "system-ui", "sans-serif"],
         heading: ["var(--font-archivo)", "system-ui", "sans-serif"],
+        serif: ["var(--font-cormorant)", "Georgia", "serif"],
+        label: ["var(--font-karla)", "system-ui", "sans-serif"],
       },
       fontSize: {
         12: ["0.75rem", { lineHeight: "1rem" }],
