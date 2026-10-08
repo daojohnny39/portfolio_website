@@ -79,6 +79,46 @@ export const projects: Entry[] = [
       "Added **QR pairing and Keychain storage**, opaque IDs for approved folders, and separate process groups for each session. Users can upload images, choose models, approve requests, and continue the same thread in Terminal.",
     ],
   },
+  // Not on the résumé. Wording comes from the résumé bullet bank; private or
+  // held repositories get no code link.
+  {
+    title: "CustomCodex",
+    subtitle: "JavaScript, Node.js, Electron, JSON-RPC/JSONL",
+    period: "Sep. 2026 – Present",
+    bullets: [
+      "Extended OpenAI's Codex desktop app with a **Node.js adapter** for native Claude Code sessions. The adapter translates streamed responses and tool events and supports approvals, cancellation, and session resume.",
+      "Kept panels and live terminal sessions attached to a project while switching between its tasks. Other projects and task-specific plans stay separate.",
+    ],
+  },
+  {
+    title: "Fan Control",
+    detail: "macOS",
+    subtitle: "Swift, SwiftUI/AppKit, IOKit/AppleSMC, XPC, LaunchDaemon",
+    period: "Jul. 2026 – Sep. 2026",
+    bullets: [
+      "Built a fan controller for the MacBookPro18,3 with fixed-speed and temperature-curve modes. The app talks to a privileged **AppleSMC helper** over authenticated XPC.",
+      "Added signed-client checks, an allowlist of SMC keys, control leases, and write readback. The helper returns the fans to Automatic when telemetry goes stale or the connection fails.",
+    ],
+  },
+  {
+    title: "AI Usage Viewer",
+    detail: "macOS",
+    subtitle: "Electron, Node.js, SwiftUI, WidgetKit",
+    period: "Jun. 2026 – Aug. 2026",
+    bullets: [
+      "Ported my Windows usage viewer for Claude and Codex to macOS, with an Electron overlay and a native **WidgetKit** widget. Both map each provider's usage windows to the same session and weekly display.",
+      "Added per-provider failure handling, exponential backoff, sanitized IPC, and duration-aware usage parsing, with isolated Claude profiles and Keychain integration.",
+    ],
+  },
+  {
+    title: "Cyberpunk 2077 Skeletal Reshaping Mod",
+    subtitle: "C#/.NET 8, C++20, Lua, PowerShell, WolvenKit, RED4ext",
+    period: "Jul. 2026",
+    bullets: [
+      "Built a **.NET 8/WolvenKit** tool that reshapes Cyberpunk 2077 characters by scaling bones without changing their hierarchy. It packages the modified rigs and reads the output archive back to verify the values.",
+      "Prototyped a C++20/RED4ext bridge to read game virtual machine data and sync bone scales across threads. Added rig rebuilding as a fallback and debugged archive loading and clothing distortion.",
+    ],
+  },
 ];
 
 export const education: Entry[] = [
@@ -93,6 +133,18 @@ export const education: Entry[] = [
   {
     title: "Johnson County Community College",
     subtitle: "A.A.S. in Computer Information Systems · Overland Park, KS",
+    period: "Dec. 2024",
+    bullets: [],
+  },
+  {
+    title: "Johnson County Community College",
+    subtitle: "A.S. in General Sciences · Overland Park, KS",
+    period: "Dec. 2024",
+    bullets: [],
+  },
+  {
+    title: "Johnson County Community College",
+    subtitle: "A.A. in Liberal Arts · Overland Park, KS",
     period: "Dec. 2024",
     bullets: [],
   },

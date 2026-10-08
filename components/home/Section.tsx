@@ -56,7 +56,7 @@ export function EntryList({ entries }: { entries: Entry[] }) {
   return (
     <div className="divide-y divide-border">
       {entries.map((entry) => (
-        <EntryBlock key={entry.title} entry={entry} />
+        <EntryBlock key={`${entry.title}-${entry.subtitle}`} entry={entry} />
       ))}
     </div>
   );

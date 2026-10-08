@@ -25,11 +25,7 @@ function Chapter({ index, children }: { index: number; children: ReactNode }) {
   return (
     <section id={chapter.id} aria-labelledby={`${chapter.id}-title`} className="research-chapter border-t border-border pt-9 sm:pt-12">
       <header className="mb-6">
-        <p className={`${labelClass} mb-3 flex items-center gap-3 text-muted`}>
-          <span aria-hidden="true" className="tabular-nums text-fg">{String(index + 1).padStart(2, "0")}</span>
-          <span aria-hidden="true" className="h-px w-6 bg-border-strong" />
-          <span>{chapter.period} 2026</span>
-        </p>
+        <p className={`${labelClass} mb-3 text-muted`}>{chapter.period} 2026</p>
         <h3 id={`${chapter.id}-title`} className="font-serif text-[clamp(1.875rem,3.5vw,2.5rem)] font-normal leading-[1.1] text-fg">
           {chapter.title}
         </h3>
@@ -217,7 +213,18 @@ export function ExperienceResearch() {
             Each scanner reports different kinds of findings and severity levels, so these counts are not equivalent detection rates. ClawScan’s LLM mode was not evaluated.
           </Note>
           <p className={proseClass}>
-            <cite>How Your Credentials Are Leaked by LLM Agent Skills</cite> helped us separate credential access from an intent to steal or a completed transfer. <cite>MalSkillBench</cite> led us to test Sentry, while <cite>MalSkills</cite> motivated comparisons on a shared benchmark because of its larger published dataset.
+            <a href="https://arxiv.org/abs/2604.03070" target="_blank" rel="noopener noreferrer" className="research-link text-fg underline decoration-border-strong underline-offset-4">
+              <cite>How Your Credentials Are Leaked by LLM Agent Skills</cite><span className="sr-only"> (opens in a new tab)</span>
+            </a>{" "}
+            helped us separate credential access from an intent to steal or a completed transfer.{" "}
+            <a href="https://arxiv.org/abs/2606.07131" target="_blank" rel="noopener noreferrer" className="research-link text-fg underline decoration-border-strong underline-offset-4">
+              <cite>MalSkillBench</cite><span className="sr-only"> (opens in a new tab)</span>
+            </a>{" "}
+            led us to test Sentry, while{" "}
+            <a href="https://arxiv.org/abs/2603.27204" target="_blank" rel="noopener noreferrer" className="research-link text-fg underline decoration-border-strong underline-offset-4">
+              <cite>MalSkills</cite><span className="sr-only"> (opens in a new tab)</span>
+            </a>{" "}
+            motivated comparisons on a shared benchmark because of its larger published dataset.
           </p>
         </Chapter>
 
@@ -274,7 +281,19 @@ export function ExperienceResearch() {
             I prepared a brute-force skill-fuzzing framework to test exfiltration behavior with fake secrets. The evasion run stopped after scoring 121 of 123 inputs. After a parallel experiment with my coworker&apos;s framework, we concluded that this fuzzing approach might not be viable.
           </p>
           <p className={proseClass}>
-            <cite>Under the Hood of SKILL.md</cite>, <cite>Cloak and Detonate</cite>, <cite>Proteus</cite>, and <cite>SkillMutator</cite> helped frame the next question: if a skill is changed to evade a scanner, does the attack still work when an agent executes it?
+            <a href="https://arxiv.org/abs/2605.11418" target="_blank" rel="noopener noreferrer" className="research-link text-fg underline decoration-border-strong underline-offset-4">
+              <cite>Under the Hood of SKILL.md</cite><span className="sr-only"> (opens in a new tab)</span>
+            </a>,{" "}
+            <a href="https://arxiv.org/abs/2607.02357" target="_blank" rel="noopener noreferrer" className="research-link text-fg underline decoration-border-strong underline-offset-4">
+              <cite>Cloak and Detonate</cite><span className="sr-only"> (opens in a new tab)</span>
+            </a>,{" "}
+            <a href="https://arxiv.org/abs/2605.11891" target="_blank" rel="noopener noreferrer" className="research-link text-fg underline decoration-border-strong underline-offset-4">
+              <cite>Proteus</cite><span className="sr-only"> (opens in a new tab)</span>
+            </a>, and{" "}
+            <a href="https://arxiv.org/abs/2606.14154" target="_blank" rel="noopener noreferrer" className="research-link text-fg underline decoration-border-strong underline-offset-4">
+              <cite>SkillMutator</cite><span className="sr-only"> (opens in a new tab)</span>
+            </a>{" "}
+            helped frame the next question: if a skill is changed to evade a scanner, does the attack still work when an agent executes it?
           </p>
         </Chapter>
 
