@@ -104,7 +104,7 @@ export function Hero() {
 
       <Collapsible>
         <p
-          className="home-enter mt-11 font-serif text-[1.125rem] italic text-muted [text-wrap:balance] sm:mt-12"
+          className="home-enter mt-11 pb-24 font-serif text-[1.125rem] italic text-muted [text-wrap:balance] sm:mt-12 sm:pb-32"
           style={rowDelay(sections.length + 1, 140)}
         >
           Based in Shawnee, Kansas. Graduating {personal.graduation}.

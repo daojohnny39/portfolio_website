@@ -14,10 +14,10 @@ import {
   type Benchmark,
 } from "@/lib/research";
 
+import { labelClass, proseClass } from "./Section";
+
 const chartPath = "/research/asset/malskillsbench-comparison.png";
 const totalEntries = researchDataset.reduce((total, item) => total + item.count, 0);
-const labelClass = "font-label text-[0.6875rem] font-medium uppercase tracking-[0.2em]";
-const proseClass = "font-serif text-[1.1875rem] font-medium leading-[1.65] text-fg-soft sm:text-[1.3125rem] [text-wrap:pretty]";
 
 function Chapter({ index, children }: { index: number; children: ReactNode }) {
   const chapter = researchChapters[index];

@@ -111,7 +111,7 @@ html:has(.home-theme) {
 
    Wide screens (1024px and up): the home column folds into a narrow column
    of small buttons on the left. The name shrinks to its initials, the icons,
-   bio, location line and footer collapse, and the section slides in from the
+   bio and location line collapse, and the section slides in from the
    right across the rest of the screen. Closing plays it in reverse.
 
    Small screens: the hero stays as is and the section covers it.
@@ -288,6 +288,14 @@ html:has(.home-theme) {
   }
 }
 
+/* Education puts its degrees in a second column beside the coursework, so
+   its article runs wider once there is room for both. */
+@media (min-width: 1280px) {
+  .home-article[data-section="education"] {
+    --article-w: 62rem;
+  }
+}
+
 @media (max-width: 1023.98px) {
   html:has(.home-panel[data-open]) {
     overflow: hidden;
@@ -296,6 +304,19 @@ html:has(.home-theme) {
 
 .research-chapter {
   scroll-margin-top: 9rem;
+}
+
+/* A project picked from the projects list scrolls to land below the panel's
+   sticky bar, which is taller on small screens where it also holds the
+   section buttons. */
+.project-story {
+  scroll-margin-top: 9rem;
+}
+
+@media (min-width: 1024px) {
+  .project-story {
+    scroll-margin-top: 6rem;
+  }
 }
 
 .research-link {

@@ -35,15 +35,24 @@ export function Rule({ side, className, delay: ms }: { side: "left" | "right"; c
   );
 }
 
-/** Renders resume text, turning **phrase** into emphasis. */
+/** Small uppercase labels and long-form body text shared by the Experience and Projects write-ups. */
+export const labelClass = "font-label text-[0.6875rem] font-medium uppercase tracking-[0.2em]";
+export const proseClass =
+  "font-serif text-[1.1875rem] font-medium leading-[1.65] text-fg-soft sm:text-[1.3125rem] [text-wrap:pretty]";
+
+/** Renders resume text, turning **phrase** into emphasis and `phrase` into code. */
 export function Rich({ text }: { text: string }) {
   return (
     <>
-      {text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+      {text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, i) =>
         part.startsWith("**") && part.endsWith("**") ? (
           <strong key={i} className="font-semibold text-fg">
             {part.slice(2, -2)}
           </strong>
+        ) : part.startsWith("`") && part.endsWith("`") ? (
+          <code key={i} className="text-[0.8em]">
+            {part.slice(1, -1)}
+          </code>
         ) : (
           part
         ),
