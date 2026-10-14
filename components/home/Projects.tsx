@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 import { Fragment } from "react";
 
 import {
@@ -8,6 +9,8 @@ import {
   type ProjectDemo,
   type ProjectDiagram,
   type ProjectFigure,
+  type ProjectImage,
+  type ProjectVideo,
 } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 
@@ -174,7 +177,69 @@ function Diagram({ diagram }: { diagram: ProjectDiagram }) {
   );
 }
 
-/** A recorded demo with its description above it. Nothing loads until the reader presses play. */
+/**
+ * A drawn diagram, or a photo in a thinner frame. The column is too narrow for a diagram's
+ * smallest labels, so it links to the full-size file.
+ */
+function DrawnFigure({ image, photo }: { image: ProjectImage; photo?: boolean }) {
+  return (
+    <figure className="pt-2">
+      <a
+        href={image.src}
+        target="_blank"
+        rel="noopener noreferrer"
+        // Not cn(): tailwind-merge drops `focus-visible:outline` as a clash with `outline-1`.
+        className={`block border border-border bg-white outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-fg ${photo ? "p-1 sm:p-1.5" : "p-3 sm:p-5"}`}
+      >
+        <Image
+          src={image.src}
+          width={image.width}
+          height={image.height}
+          sizes="(min-width: 768px) 656px, 100vw"
+          alt={image.alt}
+          className="h-auto w-full"
+        />
+        <span className="sr-only"> (opens full size in a new tab)</span>
+      </a>
+      <figcaption
+        className={cn(
+          "mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 font-label text-[0.8125rem] leading-[1.7] text-muted",
+          !image.caption && "justify-end",
+        )}
+      >
+        {image.caption && <span className="[text-wrap:pretty]">{image.caption}</span>}
+        <a
+          href={image.src}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex shrink-0 items-center gap-1.5 text-[0.75rem] text-fg underline decoration-border-strong underline-offset-4 transition-colors duration-300 hover:decoration-fg"
+        >
+          View full size <ArrowUpRight aria-hidden="true" className="size-3" />
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      </figcaption>
+    </figure>
+  );
+}
+
+/** A recorded video. Nothing loads until the reader presses play. */
+function Video({ video }: { video: ProjectVideo }) {
+  return (
+    <figure className="aspect-video overflow-hidden border border-border bg-black">
+      <video
+        src={video.src}
+        poster={video.poster}
+        aria-label={video.label}
+        controls
+        playsInline
+        preload="none"
+        className="h-full w-full"
+      />
+    </figure>
+  );
+}
+
+/** A recorded demo with its description above it. */
 function Demo({ demo }: { demo: ProjectDemo }) {
   return (
     <div>
@@ -185,17 +250,7 @@ function Demo({ demo }: { demo: ProjectDemo }) {
             <Rich text={paragraph} />
           </p>
         ))}
-        <figure className="aspect-video overflow-hidden border border-border bg-black">
-          <video
-            src={demo.src}
-            poster={demo.poster}
-            aria-label={demo.label}
-            controls
-            playsInline
-            preload="none"
-            className="h-full w-full"
-          />
-        </figure>
+        <Video video={demo} />
       </div>
     </div>
   );
@@ -218,9 +273,11 @@ function ProjectArticle({ project }: { project: Project }) {
         >
           {project.title}
         </h3>
-        <p className="mt-4 font-serif text-[clamp(1.25rem,2.2vw,1.5rem)] italic leading-[1.4] text-fg-soft [text-wrap:pretty]">
-          {project.summary}
-        </p>
+        {project.summary && (
+          <p className="mt-4 font-serif text-[clamp(1.25rem,2.2vw,1.5rem)] italic leading-[1.4] text-fg-soft [text-wrap:pretty]">
+            {project.summary}
+          </p>
+        )}
         <p className="mt-5 font-label text-[0.75rem] leading-[1.7] text-muted">
           <span className="sr-only">Built with </span>
           {project.stack.join(" · ")}
@@ -232,13 +289,16 @@ function ProjectArticle({ project }: { project: Project }) {
           <div key={section.heading ?? i}>
             {section.heading && <h4 className={cn(labelClass, "mb-4 text-fg")}>{section.heading}</h4>}
             <div className="space-y-6">
+              {section.image && <DrawnFigure image={section.image} />}
               {section.paragraphs?.map((paragraph) => (
                 <p key={paragraph} className={proseClass}>
                   <Rich text={paragraph} />
                 </p>
               ))}
+              {section.photo && <DrawnFigure image={section.photo} photo />}
               {section.figure && <Figure figure={section.figure} />}
               {section.diagram && <Diagram diagram={section.diagram} />}
+              {section.video && <Video video={section.video} />}
             </div>
           </div>
         ))}

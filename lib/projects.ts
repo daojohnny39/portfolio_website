@@ -32,20 +32,41 @@ export interface ProjectDiagram {
   caption: string;
 }
 
+/** A drawn diagram or a photo, linked to the full-size file so small labels stay readable. */
+export interface ProjectImage {
+  /** Path under public/, or a URL in the R2 bucket's projects/ folder. */
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  /** One sentence under the image saying what it shows. */
+  caption?: string;
+}
+
+/** A recorded video. Nothing loads until the reader presses play. */
+export interface ProjectVideo {
+  src: string;
+  poster?: string;
+  /** Accessible name for the video. */
+  label: string;
+}
+
 export interface ProjectSection {
   heading?: string;
   paragraphs?: string[];
   figure?: ProjectFigure;
   diagram?: ProjectDiagram;
+  /** A drawn diagram. Sits above the section's paragraphs. */
+  image?: ProjectImage;
+  /** Sits below the section's paragraphs, in a thinner frame than a diagram. */
+  photo?: ProjectImage;
+  /** Sits below the section's paragraphs. */
+  video?: ProjectVideo;
 }
 
 /** A recorded demo shown after the sections and before the note, with a short description above it. */
-export interface ProjectDemo {
+export interface ProjectDemo extends ProjectVideo {
   paragraphs: string[];
-  src: string;
-  poster?: string;
-  /** Accessible name for the video. */
-  label: string;
 }
 
 export interface Project {
@@ -56,7 +77,8 @@ export interface Project {
   platform?: string;
   period: string;
   stack: string[];
-  summary: string;
+  /** One line under the title. Optional; the header goes straight to the stack without it. */
+  summary?: string;
   sections: ProjectSection[];
   note?: string;
   link?: { label: string; href: string };
@@ -67,6 +89,93 @@ export interface Project {
 const media = "https://pub-e8e289d8d33e4c5ea574ea0ee67999a3.r2.dev/projects";
 
 export const projects: Project[] = [
+  {
+    id: "cyberpi",
+    title: "CyberPI",
+    platform: "Hack Midwest",
+    period: "Oct. 2026",
+    stack: ["Python", "AWS Strands Agents", "Amazon Rekognition", "SerpApi", "Claude", "TypeSafe Jev"],
+    sections: [
+      {
+        paragraphs: [
+          "CyberPI was my team's project at Hack Midwest 2026. A user can visit our web application, scan their face, and our system searches through images on the internet to find their profiles through their online presence. The user doesn't need to enter any extra information, other than their face. Our system handles finding their identity using real facial recognition across images of faces that we find on the internet.",
+        ],
+      },
+      {
+        heading: "The purpose",
+        paragraphs: [
+          "The purpose of the project was to identify the person, search through the internet to find their real identity, and warn the user about any potential fraudulent profiles that were set up using images of their own face. This is all done through a simple snapshot of their face with no additional information needed (could still be provided optionally)."
+        ]
+      },
+      {
+        heading: "Capturing",
+        image: {
+          src: "/projects/cyberpi-front-end.png",
+          width: 5779,
+          height: 1591,
+          alt: "Hand-drawn diagram of the front end. A consenting individual faces the camera. MediaPipe Face Landmarker, running as a local model, determines the facial angle and decides whether it is worth capturing, and the camera saves a frame snapshot.",
+        },
+      },
+      {
+        heading: "Handling Input",
+        paragraphs: [
+          "The front-end pipeline asks the user for consent to enter their facial data for the purpose of our data search. After accepting, their camera is enabled and allows them to scan their face.", 
+          "We then use Google's MediaPipe Face Landmarker, which uses the FaceMeshV2 model (ran locally) to assist the user in angling their face towards the camera for a snapshot. This allows us to get a clean shot for us to then send into our internet searching pipeline."
+        ],
+      },
+      {
+        heading: "Search and match",
+        image: {
+          src: "/projects/cyberpi-back-end.png",
+          width: 7489,
+          height: 4436,
+          alt: "Hand-drawn diagram of the back end. A screenshot goes to an AWS Strands agent running Claude Opus 5.5. The agent sends it to AWS Rekognition for facial recognition and to a search step, which uses Trace and SerpApi (Yandex and Bing reverse image search) to find the person's internet presence, such as blog posts, Facebook posts and profiles, and Twitter/X posts. Each result goes to TypeSafe Jev, which parses names and bios from social media profiles and builds structured profiles. Each profile becomes a graph of connected accounts with a trust value for each, and a verification and synthesis pass returns the agent's candidates with confidence levels: John Doe at 94% is accepted, while Johnny Appleseed at 30% and Jane Doe at 2% are rejected.",
+        },
+      },
+      {
+        heading: "Finding the person through search results",
+        paragraphs: [
+          "The snapshot that was taken from the front-end pipeline is then fed into an AWS Strands agent, powered by Claude Opus 5.5. Through the Strands agent, we use Amazon Rekognition (facial recognition model) to get a clearer crop of the screenshot on the user's face. Alongside this, we do a search using Trace (facial image search) and SerpApi as our search API system (combining Yandex and Bing reverse image search). For each result, we then use Rekognition to match the user's face to the result that we found.",
+          "We sift through the result that we found, parse through the result to find names, general bios, social media profiles, etc. We then build structured \"profiles\" based on the possible names for the user along with their connected accounts on a certain profile. We use TypeSafe's Jev model, which is a fast and efficient decision model, to decide whether two accounts belong to the same person.",
+          "We then explore into each profile's connections and link them using a graph structure. Using this framework, we can then label each account with a trust value and build a table.",
+          "This table is then fed into the Jev model, which can then build a confidence level for each candidate profile. Our code verifies the result, only accepting a strong match when confidence level is 0.80 or higher and it leads the next candidate by at least 0.20. The Strands agent then synthesizes a short bio for the accepted profile.",
+        ],
+      },
+      {
+        heading: "Output the user receives",
+        paragraphs: [
+          "Throughout the search and matching process, the user is informed of the progress of the search. Once the search finishes, the output they're given is any matching pages along with a confidence level from Rekognition's face match. The profile building and verification steps above ran in our command-line pipeline and weren't connected to the website yet.",
+        ],
+      },
+      {
+        heading: "A mock internet",
+        paragraphs: [
+          "Before doing live internet searches, which costs real money for every search, we built a mock internet server, which was hosted locally, containing a few fictional people and their pages. Once we proved that it could be done on a synthetically set up server, we then tested it on the live internet. We also built a fake image database, hosted on a teammate's machine, containing about 200,000 CelebA photos (real celebrity faces with made-up names and websites). We tested our framework by injecting our own profiles into it using our own images.",
+        ],
+      },
+      {
+        heading: "Live demo",
+        video: {
+          src: `${media}/cyberpi-live-demo.mp4`,
+          poster: `${media}/cyberpi-live-demo-poster.jpg`,
+          label: "CyberPI live demo",
+        },
+      },
+      {
+        heading: "Hackathon conclusion",
+        paragraphs: [
+          "Although we did not come out with a fully fleshed out product by the 24 hour mark, our project was more about creating a proof of concept that our framework can work. We planned to also implement VirusTotal scores along with the confidence level for each profile to assist users in finding fraudulent profiles using their images or face. We could not quite get this far (the only fraud check we had ran on the fake image database, where we marked one made-up fraud site as high risk), but the engineering behind our Strands framework was what we were aiming to prove could work."
+        ],
+        photo: {
+          src: `${media}/cyberpi-hack-midwest-team.jpg`,
+          width: 2400,
+          height: 1800,
+          alt: "The five members of the CyberPI team standing together on the Hack Midwest 2026 stage, wearing event lanyards, in front of a large sponsor screen.",
+        },
+      },
+    ],
+    link: { label: "View code", href: "https://github.com/daojohnny39/hackmidwest2026project" },
+  },
   {
     id: "windows-autobot",
     title: "Windows Autobot",
