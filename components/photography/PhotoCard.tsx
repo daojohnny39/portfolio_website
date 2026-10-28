@@ -13,7 +13,7 @@ export function PhotoCard({ photo, onClick, onLoad }: PhotoCardProps) {
     <button
       type="button"
       onClick={() => onClick(photo)}
-      className="group relative block w-full cursor-pointer overflow-hidden bg-[rgb(var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--fg))]"
+      className="group relative block h-full w-full cursor-pointer overflow-hidden bg-[rgb(var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--fg))]"
     >
       <img
         src={photo.url}
